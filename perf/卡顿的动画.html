@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  .div1 {
+    width: 200px;
+    position: absolute;
+    height: 200px;
+    background-color: aqua;
+    /* transform: translateX(0); */
+  }
+
+  .div2 {
+    /* transform: translateX(500px); */
+    /* transition: transform 3s ease; */
+  }
+</style>
+
+<body>
+  <div class="div1">
+  </div>
+  <script>
+    let div = document.querySelector('.div1');
+    let i = 0;
+    function move() {
+      i += 5
+      let j = 0
+      div.style.left = `${i}px`;
+      while (j < 100000000) {
+        j++;
+      }
+      requestAnimationFrame(move);
+    }
+    requestAnimationFrame(move);
+
+  </script>
+  <script>
+
+  </script>
+</body>
+
+</html>
