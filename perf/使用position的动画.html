@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  @keyframes move {
+    from {
+      /* transform: translate3d(0,0,0); */
+      transform: translateX(0);
+      /* left: 0; */
+    }
+
+    to {
+      /* transform: translate3d(500px, 0, 0); */
+      transform: translateX(500px);
+      /* left: 500px; */
+    }
+  }
+
+  body {
+  }
+  .div1 {
+    width: 200px;
+    height: 200px;
+    background-color: aqua;
+    position: absolute;
+    left: 0;
+  }
+  .div2 {
+    left:500px;
+    transition: left 3s ease;
+  }
+</style>
+<script async>
+  console.log(document.querySelector('.div1'));
+</script>
+
+<body>
+  <div class="div1">
+  </div>
+  <script>
+    setTimeout(() => {
+      document.querySelector('.div1').setAttribute('class', 'div1 div2')
+    }, 0);
+  </script>
+</body>
+
+</html>
