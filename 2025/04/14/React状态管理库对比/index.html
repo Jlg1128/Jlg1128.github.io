@@ -77,15 +77,15 @@
 
 
 
-<meta name="description" content="React状态管理库对比 contextcontext被创造出来就是为了解决prop drilling的问题，但是它存在重复渲染的问题，可以用https:&#x2F;&#x2F;github.com&#x2F;dai-shi&#x2F;use-context-selector解决这个问题，也可以不依赖任何库去解决use-context-selector 1234567891011const ThemeContext &#x3D; createCo">
+<meta name="description" content="对比React常见的状态管理库context、Redux、MobX、zustand以及介绍它们的使用场景 contextcontext被创造出来就是为了解决prop drilling的问题，但是它存在重复渲染的问题，可以用https:&#x2F;&#x2F;github.com&#x2F;dai-shi&#x2F;use-context-selector解决这个问题，也可以不依赖任何库去解决use-context-selector 12">
 <meta property="og:type" content="article">
 <meta property="og:title" content="React状态管理库对比">
 <meta property="og:url" content="https://jlg1128.github.io/2025/04/14/React%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%93%E5%AF%B9%E6%AF%94/index.html">
 <meta property="og:site_name" content="JLG&#39;s Blog">
-<meta property="og:description" content="React状态管理库对比 contextcontext被创造出来就是为了解决prop drilling的问题，但是它存在重复渲染的问题，可以用https:&#x2F;&#x2F;github.com&#x2F;dai-shi&#x2F;use-context-selector解决这个问题，也可以不依赖任何库去解决use-context-selector 1234567891011const ThemeContext &#x3D; createCo">
+<meta property="og:description" content="对比React常见的状态管理库context、Redux、MobX、zustand以及介绍它们的使用场景 contextcontext被创造出来就是为了解决prop drilling的问题，但是它存在重复渲染的问题，可以用https:&#x2F;&#x2F;github.com&#x2F;dai-shi&#x2F;use-context-selector解决这个问题，也可以不依赖任何库去解决use-context-selector 12">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-04-14T02:06:47.000Z">
-<meta property="article:modified_time" content="2025-04-28T01:30:29.016Z">
+<meta property="article:modified_time" content="2025-04-28T01:35:00.665Z">
 <meta property="article:author" content="Lonnie Jiang">
 <meta name="twitter:card" content="summary">
 
@@ -318,7 +318,7 @@
       
 
       
-        <p>React状态管理库对比</p>
+        <p>对比React常见的状态管理库context、Redux、MobX、zustand以及介绍它们的使用场景</p>
 <h2 id="context"><a href="#context" class="headerlink" title="context"></a>context</h2><p>context被创造出来就是为了解决<a target="_blank" rel="noopener" href="https://react.dev/learn/passing-data-deeply-with-context">prop drilling</a>的问题，但是它存在重复渲染的问题，可以用<a href="use-context-selector">https://github.com/dai-shi/use-context-selector</a>解决这个问题，也可以不依赖任何库去解决<a target="_blank" rel="noopener" href="https://github.com/dai-shi/use-context-selector/issues/109#issuecomment-1785147682">use-context-selector</a></p>
 <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">ThemeContext</span> = <span class="title function_">createContext</span>(<span class="string">&#x27;light&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Main</span> = (<span class="params">&#123; children &#125;</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">ThemeContext.Provider</span> <span class="attr">value</span>=<span class="string">&#123;useState(</span>&#x27;<span class="attr">light</span>&#x27;)&#125;&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;children&#125;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">ThemeContext.Provider</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">App</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> theme = <span class="title function_">useContext</span>(<span class="title class_">ThemeContext</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
