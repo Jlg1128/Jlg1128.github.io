@@ -237,6 +237,198 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/05/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avator.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JLG's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/05/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" itemprop="url">Astro Island架构实现原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2025-05-02T09:54:20+08:00">
+                2025-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2025/05/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2025/05/02/Astro Islands架构实现原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="什么是Islands架构"><a href="#什么是Islands架构" class="headerlink" title="什么是Islands架构"></a>什么是Islands架构</h2><p>Islands架构类似于微前端架构，但Islands主要是为了优化页面性能和用户体验，而微前端是为了解耦不同业务模块。</p>
+<div align=right><img src="/images/island/arch.png" alt="island" width="500"/></div>
+
+<h2 id="为什么要使用Islands"><a href="#为什么要使用Islands" class="headerlink" title="为什么要使用Islands"></a>为什么要使用Islands</h2><ol>
+<li>可以优先展示或者水合重要内容，比如电商商品详情页可以优先展示和水合商品主图、商品描述、购买按钮。</li>
+<li>浏览器加载的js变少，能够提升TTI。</li>
+</ol>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。"><a href="#Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。" class="headerlink" title="Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。"></a>Astro有很多<a target="_blank" rel="noopener" href="https://docs.astro.build/zh-cn/reference/directives-reference/#clientloadhttps://docs.astro.build/zh-cn/reference/directives-reference/#clientload">指令</a>表示一个组件是在服务端渲染还是客户端渲染、渲染时机。</h3><table>
+<thead>
+<tr>
+<th>directives</th>
+<th>description</th>
+<th>priority</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>client:load</td>
+<td>页面加载后立即水合</td>
+<td>high</td>
+</tr>
+<tr>
+<td>client:idle</td>
+<td>在requestIdleCallback中进行水合</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>最大等待时间后水合</td>
+<td>low</td>
+</tr>
+<tr>
+<td>client:visible</td>
+<td>进入视口后水合</td>
+<td>low</td>
+</tr>
+<tr>
+<td>client:media</td>
+<td>媒体查询后水合</td>
+<td>low</td>
+</tr>
+<tr>
+<td>client:only</td>
+<td>不进行服务端渲染</td>
+<td>low</td>
+</tr>
+<tr>
+<td>server:defer</td>
+<td>按需渲染</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>可以使用这个<a target="_blank" rel="noopener" href="https://github.com/withastro/astro/tree/dde8fd96cd6a7821b95f47ede7e30c36dad244d9/examples/with-nanostores">astro的模版</a>快速搭建一个demo</p>
+<h2 id="使用client-load标记组件为Island组件，并且高优先级水合"><a href="#使用client-load标记组件为Island组件，并且高优先级水合" class="headerlink" title="使用client:load标记组件为Island组件，并且高优先级水合"></a>使用client:load标记组件为Island组件，并且高优先级水合</h2><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">BuyNowButton</span> <span class="attr">client</span>:load onClick=&#123;handleClick&#125;&gt;点击购买&lt;/<span class="title class_">BuyNowButton</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>通过Astro的<a target="_blank" rel="noopener" href="https://github.com/withastro/compiler">compiler</a>将astro代码编译成如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; render <span class="keyword">as</span> $$render, createAstro <span class="keyword">as</span> $$createAstro, createComponent <span class="keyword">as</span> $$createComponent, renderComponent <span class="keyword">as</span> $$renderComponent &#125; <span class="keyword">from</span> <span class="string">&quot;astro/compiler-runtime&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">BuyNowButton</span> <span class="keyword">from</span> <span class="string">&quot;../components/BuyNowButton&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; withBase &#125; <span class="keyword">from</span> <span class="string">&quot;../utils&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> $$Astro = $$createAstro();</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Astro</span> = $$Astro;</span><br><span class="line"><span class="keyword">const</span> $$Index = $$createComponent(<span class="function">(<span class="params">$$result, $$props, $$slots</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="title class_">Astro2</span> = $$result.<span class="title function_">createAstro</span>($$Astro, $$props, $$slots);</span><br><span class="line">    <span class="title class_">Astro2</span>.<span class="property">self</span> = $$Index;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $$render<span class="string">`<span class="subst">$&#123;$$renderComponent($$result, <span class="string">&quot;BuyNowButton&quot;</span>, BuyNowButton, &#123; </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:load&quot;</span>: <span class="literal">true</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:component-hydration&quot;</span>: <span class="string">&quot;load&quot;</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:component-path&quot;</span>: <span class="string">&quot;/with-nanostores/src/components/BuyNowButton&quot;</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:component-export&quot;</span>: <span class="string">&quot;default&quot;</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;data-astro-cid-j7pv25f6&quot;</span>: <span class="literal">true</span> </span></span></span><br><span class="line"><span class="subst"><span class="string">    &#125;)&#125;</span>`</span>;</span><br><span class="line">&#125;, <span class="string">&quot;/with-nanostores/src/pages/index.astro&quot;</span>, <span class="keyword">void</span> <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在renderComponent中会将标记为client:load的组件渲染成</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">astro-island</span> <span class="attr">uid</span>=<span class="string">&quot;Z1xkbrp&quot;</span> <span class="attr">component-url</span>=<span class="string">&quot;/src/components/BuyNowButton.tsx&quot;</span> <span class="attr">component-export</span>=<span class="string">&quot;default&quot;</span> <span class="attr">renderer-url</span>=<span class="string">&quot;/node_modules/.vite/deps/@astrojs_preact_client-dev__js.js?v=ec7158f6&quot;</span> <span class="attr">props</span>=<span class="string">&quot;&#123;<span class="symbol">&amp;quot;</span>data-astro-cid-sckkx6r4<span class="symbol">&amp;quot;</span>:[0,true]&#125;&quot;</span> <span class="attr">client</span>=<span class="string">&quot;load&quot;</span> <span class="attr">before-hydration-url</span>=<span class="string">&quot;/@id/astro:scripts/before-hydration.js&quot;</span> <span class="attr">opts</span>=<span class="string">&quot;&#123;<span class="symbol">&amp;quot;</span>name<span class="symbol">&amp;quot;</span>:<span class="symbol">&amp;quot;</span>BuyNowButton<span class="symbol">&amp;quot;</span>,<span class="symbol">&amp;quot;</span>value<span class="symbol">&amp;quot;</span>:true&#125;&quot;</span> <span class="attr">server-render-time</span>=<span class="string">&quot;1.461416999999983&quot;</span> <span class="attr">await-children</span>=<span class="string">&quot;&quot;</span> <span class="attr">client-render-time</span>=<span class="string">&quot;1&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">aside</span> <span class="attr">hidden</span>=<span class="string">&quot;&quot;</span> <span class="attr">class</span>=<span class="string">&quot;_container_jwp5b_1&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">p</span>&gt;</span>Your cart is empty!<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">aside</span>&gt;</span><span class="tag">&lt;/<span class="name">astro-island</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>服务端返回的就是上面的html，并且会返回astro-island.js文件，该文件注册astro-island自定义元素，<br>该元素在connectCallback后获取astro dom上的component-url、renderer-url（hydrator水合器）和props。最后await hydrator(&lt;Component {…props}&#x2F;&gt;)渲染组件</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://jasonformat.com/islands-architecture/">https://jasonformat.com/islands-architecture/</a><br><a target="_blank" rel="noopener" href="https://docs.astro.build/zh-cn/concepts/why-astro/#_top">https://docs.astro.build/zh-cn/concepts/why-astro/#_top</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/04/14/React%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%93%E5%AF%B9%E6%AF%94/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -486,198 +678,6 @@
 
 <h2 id="Optimize-RuntimeChunk配置的作用"><a href="#Optimize-RuntimeChunk配置的作用" class="headerlink" title="Optimize.RuntimeChunk配置的作用"></a>Optimize.RuntimeChunk配置的作用</h2><p>将运行时模块管理相关的代码从app.js中抽离出来，有利于缓存。因为线上环境vendors文件名都会带有hash，假如vendors内容改了导致hash改了，app.js也得做变更，影响网页性能。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// app.js</span></span><br><span class="line"><span class="keyword">var</span> __webpack_exports__ = __webpack_require__.<span class="title function_">O</span>(<span class="literal">undefined</span>, [<span class="string">&quot;vendors&quot;</span>], <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">__webpack_require__</span>(<span class="string">&quot;./client/src/entry-client.tsx&quot;</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/04/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avator.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="JLG's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2025/04/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" itemprop="url">Astro Island架构实现原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2025-04-02T09:54:20+08:00">
-                2025-04-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2025/04/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2025/04/02/Astro Islands架构实现原理/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="什么是Islands架构"><a href="#什么是Islands架构" class="headerlink" title="什么是Islands架构"></a>什么是Islands架构</h2><p>Islands架构类似于微前端架构，但Islands主要是为了优化页面性能和用户体验，而微前端是为了解耦不同业务模块。</p>
-<div align=right><img src="/images/island/arch.png" alt="island" width="500"/></div>
-
-<h2 id="为什么要使用Islands"><a href="#为什么要使用Islands" class="headerlink" title="为什么要使用Islands"></a>为什么要使用Islands</h2><ol>
-<li>可以优先展示或者水合重要内容，比如电商商品详情页可以优先展示和水合商品主图、商品描述、购买按钮。</li>
-<li>浏览器加载的js变少，能够提升TTI。</li>
-</ol>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。"><a href="#Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。" class="headerlink" title="Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。"></a>Astro有很多<a target="_blank" rel="noopener" href="https://docs.astro.build/zh-cn/reference/directives-reference/#clientloadhttps://docs.astro.build/zh-cn/reference/directives-reference/#clientload">指令</a>表示一个组件是在服务端渲染还是客户端渲染、渲染时机。</h3><table>
-<thead>
-<tr>
-<th>directives</th>
-<th>description</th>
-<th>priority</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>client:load</td>
-<td>页面加载后立即水合</td>
-<td>high</td>
-</tr>
-<tr>
-<td>client:idle</td>
-<td>在requestIdleCallback中进行水合</td>
-<td>medium</td>
-</tr>
-<tr>
-<td>timeout</td>
-<td>最大等待时间后水合</td>
-<td>low</td>
-</tr>
-<tr>
-<td>client:visible</td>
-<td>进入视口后水合</td>
-<td>low</td>
-</tr>
-<tr>
-<td>client:media</td>
-<td>媒体查询后水合</td>
-<td>low</td>
-</tr>
-<tr>
-<td>client:only</td>
-<td>不进行服务端渲染</td>
-<td>low</td>
-</tr>
-<tr>
-<td>server:defer</td>
-<td>按需渲染</td>
-<td></td>
-</tr>
-</tbody></table>
-<p>可以使用这个<a target="_blank" rel="noopener" href="https://github.com/withastro/astro/tree/dde8fd96cd6a7821b95f47ede7e30c36dad244d9/examples/with-nanostores">astro的模版</a>快速搭建一个demo</p>
-<h2 id="使用client-load标记组件为Island组件，并且高优先级水合"><a href="#使用client-load标记组件为Island组件，并且高优先级水合" class="headerlink" title="使用client:load标记组件为Island组件，并且高优先级水合"></a>使用client:load标记组件为Island组件，并且高优先级水合</h2><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">BuyNowButton</span> <span class="attr">client</span>:load onClick=&#123;handleClick&#125;&gt;点击购买&lt;/<span class="title class_">BuyNowButton</span>&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>通过Astro的<a target="_blank" rel="noopener" href="https://github.com/withastro/compiler">compiler</a>将astro代码编译成如下</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; render <span class="keyword">as</span> $$render, createAstro <span class="keyword">as</span> $$createAstro, createComponent <span class="keyword">as</span> $$createComponent, renderComponent <span class="keyword">as</span> $$renderComponent &#125; <span class="keyword">from</span> <span class="string">&quot;astro/compiler-runtime&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">BuyNowButton</span> <span class="keyword">from</span> <span class="string">&quot;../components/BuyNowButton&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; withBase &#125; <span class="keyword">from</span> <span class="string">&quot;../utils&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> $$Astro = $$createAstro();</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Astro</span> = $$Astro;</span><br><span class="line"><span class="keyword">const</span> $$Index = $$createComponent(<span class="function">(<span class="params">$$result, $$props, $$slots</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="title class_">Astro2</span> = $$result.<span class="title function_">createAstro</span>($$Astro, $$props, $$slots);</span><br><span class="line">    <span class="title class_">Astro2</span>.<span class="property">self</span> = $$Index;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $$render<span class="string">`<span class="subst">$&#123;$$renderComponent($$result, <span class="string">&quot;BuyNowButton&quot;</span>, BuyNowButton, &#123; </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:load&quot;</span>: <span class="literal">true</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:component-hydration&quot;</span>: <span class="string">&quot;load&quot;</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:component-path&quot;</span>: <span class="string">&quot;/with-nanostores/src/components/BuyNowButton&quot;</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:component-export&quot;</span>: <span class="string">&quot;default&quot;</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;data-astro-cid-j7pv25f6&quot;</span>: <span class="literal">true</span> </span></span></span><br><span class="line"><span class="subst"><span class="string">    &#125;)&#125;</span>`</span>;</span><br><span class="line">&#125;, <span class="string">&quot;/with-nanostores/src/pages/index.astro&quot;</span>, <span class="keyword">void</span> <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
-
-<p>在renderComponent中会将标记为client:load的组件渲染成</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">astro-island</span> <span class="attr">uid</span>=<span class="string">&quot;Z1xkbrp&quot;</span> <span class="attr">component-url</span>=<span class="string">&quot;/src/components/BuyNowButton.tsx&quot;</span> <span class="attr">component-export</span>=<span class="string">&quot;default&quot;</span> <span class="attr">renderer-url</span>=<span class="string">&quot;/node_modules/.vite/deps/@astrojs_preact_client-dev__js.js?v=ec7158f6&quot;</span> <span class="attr">props</span>=<span class="string">&quot;&#123;<span class="symbol">&amp;quot;</span>data-astro-cid-sckkx6r4<span class="symbol">&amp;quot;</span>:[0,true]&#125;&quot;</span> <span class="attr">client</span>=<span class="string">&quot;load&quot;</span> <span class="attr">before-hydration-url</span>=<span class="string">&quot;/@id/astro:scripts/before-hydration.js&quot;</span> <span class="attr">opts</span>=<span class="string">&quot;&#123;<span class="symbol">&amp;quot;</span>name<span class="symbol">&amp;quot;</span>:<span class="symbol">&amp;quot;</span>BuyNowButton<span class="symbol">&amp;quot;</span>,<span class="symbol">&amp;quot;</span>value<span class="symbol">&amp;quot;</span>:true&#125;&quot;</span> <span class="attr">server-render-time</span>=<span class="string">&quot;1.461416999999983&quot;</span> <span class="attr">await-children</span>=<span class="string">&quot;&quot;</span> <span class="attr">client-render-time</span>=<span class="string">&quot;1&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">aside</span> <span class="attr">hidden</span>=<span class="string">&quot;&quot;</span> <span class="attr">class</span>=<span class="string">&quot;_container_jwp5b_1&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">p</span>&gt;</span>Your cart is empty!<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">aside</span>&gt;</span><span class="tag">&lt;/<span class="name">astro-island</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>服务端返回的就是上面的html，并且会返回astro-island.js文件，该文件注册astro-island自定义元素，<br>该元素在connectCallback后获取astro dom上的component-url、renderer-url（hydrator水合器）和props。最后await hydrator(&lt;Component {…props}&#x2F;&gt;)渲染组件</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://jasonformat.com/islands-architecture/">https://jasonformat.com/islands-architecture/</a><br><a target="_blank" rel="noopener" href="https://docs.astro.build/zh-cn/concepts/why-astro/#_top">https://docs.astro.build/zh-cn/concepts/why-astro/#_top</a></p>
 
           
         

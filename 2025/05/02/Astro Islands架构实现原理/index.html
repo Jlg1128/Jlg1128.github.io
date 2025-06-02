@@ -80,13 +80,13 @@
 <meta name="description" content="什么是Islands架构Islands架构类似于微前端架构，但Islands主要是为了优化页面性能和用户体验，而微前端是为了解耦不同业务模块。   为什么要使用Islands 可以优先展示或者水合重要内容，比如电商商品详情页可以优先展示和水合商品主图、商品描述、购买按钮。 浏览器加载的js变少，能够提升TTI。  使用Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。   d">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Astro Island架构实现原理">
-<meta property="og:url" content="https://jlg1128.github.io/2025/04/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:url" content="https://jlg1128.github.io/2025/05/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="JLG&#39;s Blog">
 <meta property="og:description" content="什么是Islands架构Islands架构类似于微前端架构，但Islands主要是为了优化页面性能和用户体验，而微前端是为了解耦不同业务模块。   为什么要使用Islands 可以优先展示或者水合重要内容，比如电商商品详情页可以优先展示和水合商品主图、商品描述、购买按钮。 浏览器加载的js变少，能够提升TTI。  使用Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。   d">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://jlg1128.github.io/images/island/arch.png">
-<meta property="article:published_time" content="2025-04-02T01:54:20.000Z">
-<meta property="article:modified_time" content="2025-06-02T05:02:23.523Z">
+<meta property="article:published_time" content="2025-05-02T01:54:20.000Z">
+<meta property="article:modified_time" content="2025-06-02T05:04:45.725Z">
 <meta property="article:author" content="Lonnie Jiang">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://jlg1128.github.io/images/island/arch.png">
@@ -119,7 +119,7 @@
 
 
 
-  <link rel="canonical" href="https://jlg1128.github.io/2025/04/02/Astro Islands架构实现原理/"/>
+  <link rel="canonical" href="https://jlg1128.github.io/2025/05/02/Astro Islands架构实现原理/"/>
 
 
 
@@ -242,7 +242,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/04/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/05/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -271,8 +271,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2025-04-02T09:54:20+08:00">
-                2025-04-02
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2025-05-02T09:54:20+08:00">
+                2025-05-02
               </time>
             
 
@@ -290,9 +290,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2025/04/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#comments" itemprop="discussionUrl">
+                <a href="/2025/05/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2025/04/02/Astro Islands架构实现原理/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2025/05/02/Astro Islands架构实现原理/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -406,8 +406,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2025/04/02/React%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD-loadable-components%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="next" title="React动态加载-@loadable-components源码解析">
-                <i class="fa fa-chevron-left"></i> React动态加载-@loadable-components源码解析
+              <a href="/2025/04/14/React%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%BA%93%E5%AF%B9%E6%AF%94/" rel="next" title="React状态管理库对比">
+                <i class="fa fa-chevron-left"></i> React状态管理库对比
               </a>
             
           </div>
@@ -415,10 +415,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2025/04/03/webpack%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F/" rel="prev" title="webpack如何保证构建产物的加载顺序？">
-                webpack如何保证构建产物的加载顺序？ <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -726,8 +722,8 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'https://jlg1128.github.io/2025/04/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/';
-          this.page.identifier = '2025/04/02/Astro Islands架构实现原理/';
+          this.page.url = 'https://jlg1128.github.io/2025/05/02/Astro%20Islands%E6%9E%B6%E6%9E%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/';
+          this.page.identifier = '2025/05/02/Astro Islands架构实现原理/';
           this.page.title = 'Astro Island架构实现原理';
         };
         var d = document, s = d.createElement('script');
