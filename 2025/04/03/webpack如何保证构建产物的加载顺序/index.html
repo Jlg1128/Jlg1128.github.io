@@ -77,16 +77,16 @@
 
 
 
-<meta name="description" content="假如通过splitChunks分出了多个initialChunk，webpack如何保证这些产物的加载顺序？下文参考这个仓库，构建产物包含app.js和vendors.js。webpack如何保证在下载了vendors.js之后才执行app.js相关的模块代码？ app.js中有如下代码 1234&#x2F;&#x2F; 表示在下载完vendors之后再require入口文件var __webpack_exports">
+<meta name="description" content="假如通过splitChunks分出了多个initialChunk，Webpack如何保证这些产物的加载顺序？下文参考这个仓库，构建产物包含app.js和vendors.js。webpack如何保证在下载了vendors.js之后才执行app.js相关的模块代码？ app.js中有如下代码 1234&#x2F;&#x2F; 表示在下载完vendors之后再require入口文件var __webpack_exports">
 <meta property="og:type" content="article">
-<meta property="og:title" content="webpack如何保证构建产物的加载顺序？">
-<meta property="og:url" content="https://jlg1128.github.io/2025/04/03/webpack%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F/index.html">
+<meta property="og:title" content="Webpack如何保证构建产物的加载顺序？">
+<meta property="og:url" content="https://jlg1128.github.io/2025/04/03/Webpack%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F/index.html">
 <meta property="og:site_name" content="JLG&#39;s Blog">
-<meta property="og:description" content="假如通过splitChunks分出了多个initialChunk，webpack如何保证这些产物的加载顺序？下文参考这个仓库，构建产物包含app.js和vendors.js。webpack如何保证在下载了vendors.js之后才执行app.js相关的模块代码？ app.js中有如下代码 1234&#x2F;&#x2F; 表示在下载完vendors之后再require入口文件var __webpack_exports">
+<meta property="og:description" content="假如通过splitChunks分出了多个initialChunk，Webpack如何保证这些产物的加载顺序？下文参考这个仓库，构建产物包含app.js和vendors.js。webpack如何保证在下载了vendors.js之后才执行app.js相关的模块代码？ app.js中有如下代码 1234&#x2F;&#x2F; 表示在下载完vendors之后再require入口文件var __webpack_exports">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://jlg1128.github.io/images/webpack-order/1.png">
 <meta property="article:published_time" content="2025-04-03T01:03:36.000Z">
-<meta property="article:modified_time" content="2025-04-11T02:00:12.297Z">
+<meta property="article:modified_time" content="2025-06-24T01:41:39.128Z">
 <meta property="article:author" content="Lonnie Jiang">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://jlg1128.github.io/images/webpack-order/1.png">
@@ -119,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="https://jlg1128.github.io/2025/04/03/webpack如何保证构建产物的加载顺序/"/>
+  <link rel="canonical" href="https://jlg1128.github.io/2025/04/03/Webpack如何保证构建产物的加载顺序/"/>
 
 
 
 
 
-  <title>webpack如何保证构建产物的加载顺序？ | JLG's Blog</title>
+  <title>Webpack如何保证构建产物的加载顺序？ | JLG's Blog</title>
   
 
 
@@ -242,7 +242,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/04/03/webpack%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F/">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/04/03/Webpack%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -259,7 +259,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">webpack如何保证构建产物的加载顺序？</h1>
+          <h1 class="post-title" itemprop="name headline">Webpack如何保证构建产物的加载顺序？</h1>
         
 
         <div class="post-meta">
@@ -290,9 +290,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2025/04/03/webpack%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F/#comments" itemprop="discussionUrl">
+                <a href="/2025/04/03/Webpack%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2025/04/03/webpack如何保证构建产物的加载顺序/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2025/04/03/Webpack如何保证构建产物的加载顺序/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -320,7 +320,7 @@
       
 
       
-        <p>假如通过splitChunks分出了多个initialChunk，webpack如何保证这些产物的加载顺序？下文参考这个<a target="_blank" rel="noopener" href="https://github.com/Jlg1128/react-mobx-ssr">仓库</a>，构建产物包含app.js和vendors.js。webpack如何保证在下载了vendors.js之后才执行app.js相关的模块代码？</p>
+        <p>假如通过splitChunks分出了多个initialChunk，Webpack如何保证这些产物的加载顺序？下文参考这个<a target="_blank" rel="noopener" href="https://github.com/Jlg1128/react-mobx-ssr">仓库</a>，构建产物包含app.js和vendors.js。webpack如何保证在下载了vendors.js之后才执行app.js相关的模块代码？</p>
 <p>app.js中有如下代码</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 表示在下载完vendors之后再require入口文件</span></span><br><span class="line"><span class="keyword">var</span> __webpack_exports__ = __webpack_require__.<span class="title function_">O</span>(<span class="literal">undefined</span>, [<span class="string">&quot;vendors&quot;</span>], <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">__webpack_require__</span>(<span class="string">&quot;./client/src/entry.tsx&quot;</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
@@ -679,9 +679,9 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'https://jlg1128.github.io/2025/04/03/webpack%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F/';
-          this.page.identifier = '2025/04/03/webpack如何保证构建产物的加载顺序/';
-          this.page.title = 'webpack如何保证构建产物的加载顺序？';
+          this.page.url = 'https://jlg1128.github.io/2025/04/03/Webpack%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F/';
+          this.page.identifier = '2025/04/03/Webpack如何保证构建产物的加载顺序/';
+          this.page.title = 'Webpack如何保证构建产物的加载顺序？';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://https-jlg1128-github-io.disqus.com/embed.js';
