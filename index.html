@@ -237,6 +237,318 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/07/08/midscene%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avator.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JLG's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/07/08/midscene%E7%AC%94%E8%AE%B0/" itemprop="url">Untitled</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2025-07-08T09:32:00+08:00">
+                2025-07-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2025/07/08/midscene%E7%AC%94%E8%AE%B0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2025/07/08/midscene笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="原理是什么"><a href="#原理是什么" class="headerlink" title="原理是什么"></a>原理是什么</h2><p>最让我好奇的是他的prompt怎么写的，怎么制定plan，怎么实现元素的定位（比如页面上有多个相同的元素）</p>
+<p>🧑‍💻current doing &#x3D;&gt; 看midscene源码（packages&#x2F;web-integration&#x2F;src&#x2F;common&#x2F;tasks.ts PageTaskExecutor.plan -&gt; planningTaskFromPrompt）<br>planningTaskFromPrompt:<br>    userPrompt -&gt; tasks (packages&#x2F;core&#x2F;src&#x2F;ai-model&#x2F;prompt&#x2F;llm-planning.ts systemTemplateOfVLPlanning)<br>    class PageAgent.getUIContext() -&gt; parseContextFromWebPage -&gt;<br>    page.screenshotBase64().then((base64) &#x3D;&gt; {<br>      screenshotBase64 &#x3D; base64;<br>    }), -&gt; setupPlanningContext -&gt; await plan -&gt; actions -&gt; finalActions(存在locate的话添加’Locate’ action) -&gt; convertPlanToExecutable(根据plan生成tasks)，比如’Input’的plan生成的task<br>            const taskActionInput: ExecutionTaskActionApply<PlanningActionParamInputOrKeyPress> &#x3D;<br>          {<br>            type: ‘Action’,<br>            subType: ‘Input’,<br>            param: plan.param,<br>            thought: plan.thought,<br>            locate: plan.locate,<br>            executor: async (taskParam, { element }) &#x3D;&gt; {<br>              if (element) {<br>                await this.page.clearInput(element as unknown as ElementInfo);</p>
+<pre><code>            if (!taskParam || !taskParam.value) &#123;
+              return;
+            &#125;
+
+            await this.page.keyboard.type(taskParam.value);
+          &#125; else &#123;
+            await this.page.keyboard.type(taskParam.value);
+          &#125;
+        &#125;,
+      &#125;;
+ -&gt; 
+matchElementFromPlan -&gt; const taskFind 
+</code></pre>
+<p>匹配的逻辑<br>tasks.ts里locate的task.executor</p>
+<ol>
+<li>elementByPositionWithElementInfo(根据bbox dfs tree找到node，而且该node的area是最小的)，<br>tree是来自parseContextFromWebPage，htmlElment.js webExtractNodeTree</li>
+</ol>
+<p>current doing</p>
+<ol>
+<li><p>matchElementFromPlan<br>  jimp是什么<br>  定位元素😀<br>  parseContextFromWebPage</p>
+</li>
+<li><p>const items &#x3D; await agent.aiQuery(<br>   ‘{itemTitle: string, price: Number}[], 找到列表里的商品标题和价格’,<br> );<br> console.log(“耳机商品信息”, items);<br> 怎么实现的</p>
+<ol>
+<li>PageTaskExecutor.createTypeQueryTask(‘Query’, demand);</li>
+<li>extractDataQueryPrompt <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">const extractDataPrompt = new PromptTemplate(&#123;</span><br><span class="line">template: `</span><br><span class="line">  &lt;PageDescription&gt;</span><br><span class="line">  &#123;pageDescription&#125;</span><br><span class="line">  &lt;/PageDescription&gt;</span><br><span class="line"></span><br><span class="line">  &lt;DATA_DEMAND&gt;</span><br><span class="line">  &#123;dataQuery&#125;</span><br><span class="line">  &lt;/DATA_DEMAND&gt;</span><br><span class="line">    `,</span><br><span class="line">      inputVariables: [&#x27;pageDescription&#x27;, &#x27;dataQuery&#x27;],</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><p>PromptTemplate实现😀</p>
+</li>
+<li><p>ai断言<br> PageTaskExecutor.assert<br> insight.assert<br> prompt:</p>
+ <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Here is the assertion. Please tell whether it is truthy according to the screenshot.</span><br><span class="line">=====================================</span><br><span class="line">$&#123;assertion&#125;</span><br><span class="line">=====================================</span><br><span class="line">  `,</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/06/26/Playwright-MCP%E4%B8%8EMidscene-js%E5%8C%BA%E5%88%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avator.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JLG's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/06/26/Playwright-MCP%E4%B8%8EMidscene-js%E5%8C%BA%E5%88%AB/" itemprop="url">Playwright MCP原理以及与Midscene.js的区别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2025-06-26T10:04:27+08:00">
+                2025-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2025/06/26/Playwright-MCP%E4%B8%8EMidscene-js%E5%8C%BA%E5%88%AB/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2025/06/26/Playwright-MCP与Midscene-js区别/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Playwright-MCP原理"><a href="#Playwright-MCP原理" class="headerlink" title="Playwright-MCP原理"></a>Playwright-MCP原理</h2><p>Playwright有一个page._snapshotForAI方法，为html生成如下格式的字符串，基于html的aria也就是语义生成的，每个节点有个ref，ref是唯一的，元素的实现是通过这个ref来实现。</p>
+<p>以下是通过page._snapshotForAI方法为 <a target="_blank" rel="noopener" href="https://playwright.dev/">https://playwright.dev/</a> 生成的部分字符串</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">- generic [ref=e2]:</span><br><span class="line">  - region &quot;Skip to main content&quot;:</span><br><span class="line">    - link &quot;Skip to main content&quot; [ref=e4] [cursor=pointer]:</span><br><span class="line">      - /url: &quot;#__docusaurus_skipToContent_fallback&quot;</span><br><span class="line">  - navigation &quot;Main&quot; [ref=e5]:</span><br><span class="line">    - generic [ref=e6]:</span><br><span class="line">      - generic [ref=e7]:</span><br><span class="line">        - link &quot;Playwright logo Playwright&quot; [ref=e8] [cursor=pointer]:</span><br><span class="line">          - /url: /</span><br><span class="line">          - img &quot;Playwright logo&quot; [ref=e10] [cursor=pointer]</span><br><span class="line">          - generic [ref=e11] [cursor=pointer]: Playwright</span><br><span class="line">        - link &quot;Docs&quot; [ref=e12] [cursor=pointer]:</span><br><span class="line">          - /url: /docs/intro</span><br><span class="line">        - link &quot;API&quot; [ref=e13] [cursor=pointer]:</span><br><span class="line">          - /url: /docs/api/class-playwright</span><br><span class="line">        - button &quot;Node.js&quot; [ref=e15] [cursor=pointer]</span><br><span class="line">        - link &quot;Community&quot; [ref=e16] [cursor=pointer]:</span><br><span class="line">          - /url: /community/welcome</span><br></pre></td></tr></table></figure>
+
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ol>
+<li>假如网站内容多，生成的snapshot就很大，与大模型交互的所需要的token就多，会存在费用高，token数限制的问题。</li>
+<li>假如网站没做好aria无障碍，可能会存在识别精度低的问题。</li>
+</ol>
+<h2 id="与Midscene-js的区别"><a href="#与Midscene-js的区别" class="headerlink" title="与Midscene.js的区别"></a>与Midscene.js的区别</h2><ol>
+<li><p>定位准确度<br>整体差不多，Playwright-MCP为每个节点生成ref，基于ref定位，而Midscene.js基于视觉大模型获取boundingBox，然后进行范围匹配，都是通过大模型语义识别。</p>
+</li>
+<li><p>可定位区域<br>Playwright-MCP支持整个网站，Midscene.js基于可视区域，假如有个按钮在弹窗下面，Midscene.js就无法识别了。</p>
+</li>
+<li><p>定位速度<br>Playwright-MCP较快，两个case 5s内完成了，但Midscene.js基于视觉大模型，速度较慢，本地试了下平均一个请求5-10s。</p>
+</li>
+<li><p>测试报告<br>Midscene.js有完善的用例报告回放，Playwright-MCP需要自己去接入或者实现一套。</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/06/23/Midscene.js%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -893,6 +1205,136 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/04/02/React-SSR-Suspense-Streaming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avator.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JLG's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/04/02/React-SSR-Suspense-Streaming/" itemprop="url">React SSR Suspense Streaming</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2025-04-02T09:54:04+08:00">
+                2025-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2025/04/02/React-SSR-Suspense-Streaming/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2025/04/02/React-SSR-Suspense-Streaming/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/04/02/React%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD-loadable-components%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1401,7 +1843,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

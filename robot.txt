@@ -1,0 +1,5 @@
+# hexo robots.txt
+User-agent: *
+Allow: *
+
+Sitemap: https://jlg1128.github.io/sitemap.xml

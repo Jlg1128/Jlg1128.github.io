@@ -77,15 +77,15 @@
 
 
 
-<meta name="description" content="为了更好地整理、理解透知识点，搭建了这个博客网站，希望能多多沉淀！">
+<meta name="description" content="原理是什么最让我好奇的是他的prompt怎么写的，怎么制定plan，怎么实现元素的定位（比如页面上有多个相同的元素） 🧑‍💻current doing &#x3D;&gt; 看midscene源码（packages&#x2F;web-integration&#x2F;src&#x2F;common&#x2F;tasks.ts PageTaskExecutor.plan -&gt; planni">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello world">
-<meta property="og:url" content="https://jlg1128.github.io/2024/11/15/hello-world/index.html">
+<meta property="og:title" content="JLG&#39;s Blog">
+<meta property="og:url" content="https://jlg1128.github.io/2025/07/08/midscene%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="JLG&#39;s Blog">
-<meta property="og:description" content="为了更好地整理、理解透知识点，搭建了这个博客网站，希望能多多沉淀！">
+<meta property="og:description" content="原理是什么最让我好奇的是他的prompt怎么写的，怎么制定plan，怎么实现元素的定位（比如页面上有多个相同的元素） 🧑‍💻current doing &#x3D;&gt; 看midscene源码（packages&#x2F;web-integration&#x2F;src&#x2F;common&#x2F;tasks.ts PageTaskExecutor.plan -&gt; planni">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-11-15T14:36:00.000Z">
-<meta property="article:modified_time" content="2024-11-15T14:40:54.113Z">
+<meta property="article:published_time" content="2025-07-08T01:32:00.000Z">
+<meta property="article:modified_time" content="2025-07-08T01:32:00.001Z">
 <meta property="article:author" content="Lonnie Jiang">
 <meta name="twitter:card" content="summary">
 
@@ -117,13 +117,13 @@
 
 
 
-  <link rel="canonical" href="https://jlg1128.github.io/2024/11/15/hello-world/"/>
+  <link rel="canonical" href="https://jlg1128.github.io/2025/07/08/midscene笔记/"/>
 
 
 
 
 
-  <title>Hello world | JLG's Blog</title>
+  <title> | JLG's Blog</title>
   
 
 
@@ -240,7 +240,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2024/11/15/hello-world/">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/07/08/midscene%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -257,7 +257,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Hello world</h1>
+          <h1 class="post-title" itemprop="name headline"></h1>
         
 
         <div class="post-meta">
@@ -269,8 +269,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2024-11-15T22:36:00+08:00">
-                2024-11-15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2025-07-08T09:32:00+08:00">
+                2025-07-08
               </time>
             
 
@@ -288,9 +288,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2024/11/15/hello-world/#comments" itemprop="discussionUrl">
+                <a href="/2025/07/08/midscene%E7%AC%94%E8%AE%B0/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2024/11/15/hello-world/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2025/07/08/midscene笔记/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -318,7 +318,40 @@
       
 
       
-        <p>为了更好地整理、理解透知识点，搭建了这个博客网站，希望能多多沉淀！</p>
+        <h2 id="原理是什么"><a href="#原理是什么" class="headerlink" title="原理是什么"></a>原理是什么</h2><p>最让我好奇的是他的prompt怎么写的，怎么制定plan，怎么实现元素的定位（比如页面上有多个相同的元素）</p>
+<p>🧑‍💻current doing &#x3D;&gt; 看midscene源码（packages&#x2F;web-integration&#x2F;src&#x2F;common&#x2F;tasks.ts PageTaskExecutor.plan -&gt; planningTaskFromPrompt）<br>planningTaskFromPrompt:<br>    userPrompt -&gt; tasks (packages&#x2F;core&#x2F;src&#x2F;ai-model&#x2F;prompt&#x2F;llm-planning.ts systemTemplateOfVLPlanning)<br>    class PageAgent.getUIContext() -&gt; parseContextFromWebPage -&gt;<br>    page.screenshotBase64().then((base64) &#x3D;&gt; {<br>      screenshotBase64 &#x3D; base64;<br>    }), -&gt; setupPlanningContext -&gt; await plan -&gt; actions -&gt; finalActions(存在locate的话添加’Locate’ action) -&gt; convertPlanToExecutable(根据plan生成tasks)，比如’Input’的plan生成的task<br>            const taskActionInput: ExecutionTaskActionApply<PlanningActionParamInputOrKeyPress> &#x3D;<br>          {<br>            type: ‘Action’,<br>            subType: ‘Input’,<br>            param: plan.param,<br>            thought: plan.thought,<br>            locate: plan.locate,<br>            executor: async (taskParam, { element }) &#x3D;&gt; {<br>              if (element) {<br>                await this.page.clearInput(element as unknown as ElementInfo);</p>
+<pre><code>            if (!taskParam || !taskParam.value) &#123;
+              return;
+            &#125;
+
+            await this.page.keyboard.type(taskParam.value);
+          &#125; else &#123;
+            await this.page.keyboard.type(taskParam.value);
+          &#125;
+        &#125;,
+      &#125;;
+ -&gt; 
+matchElementFromPlan -&gt; const taskFind 
+</code></pre>
+<p>匹配的逻辑<br>tasks.ts里locate的task.executor</p>
+<ol>
+<li>elementByPositionWithElementInfo(根据bbox dfs tree找到node，而且该node的area是最小的)，<br>tree是来自parseContextFromWebPage，htmlElment.js webExtractNodeTree</li>
+</ol>
+<p>current doing</p>
+<ol>
+<li><p>matchElementFromPlan<br>  jimp是什么<br>  定位元素😀<br>  parseContextFromWebPage</p>
+</li>
+<li><p>const items &#x3D; await agent.aiQuery(<br>   ‘{itemTitle: string, price: Number}[], 找到列表里的商品标题和价格’,<br> );<br> console.log(“耳机商品信息”, items);<br> 怎么实现的</p>
+<ol>
+<li>PageTaskExecutor.createTypeQueryTask(‘Query’, demand);</li>
+<li>extractDataQueryPrompt <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">const extractDataPrompt = new PromptTemplate(&#123;</span><br><span class="line">template: `</span><br><span class="line">  &lt;PageDescription&gt;</span><br><span class="line">  &#123;pageDescription&#125;</span><br><span class="line">  &lt;/PageDescription&gt;</span><br><span class="line"></span><br><span class="line">  &lt;DATA_DEMAND&gt;</span><br><span class="line">  &#123;dataQuery&#125;</span><br><span class="line">  &lt;/DATA_DEMAND&gt;</span><br><span class="line">    `,</span><br><span class="line">      inputVariables: [&#x27;pageDescription&#x27;, &#x27;dataQuery&#x27;],</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><p>PromptTemplate实现😀</p>
+</li>
+<li><p>ai断言<br> PageTaskExecutor.assert<br> insight.assert<br> prompt:</p>
+ <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Here is the assertion. Please tell whether it is truthy according to the screenshot.</span><br><span class="line">=====================================</span><br><span class="line">$&#123;assertion&#125;</span><br><span class="line">=====================================</span><br><span class="line">  `,</span><br></pre></td></tr></table></figure></li>
+</ol>
 
       
     </div>
@@ -343,15 +376,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2025/06/26/Playwright-MCP%E4%B8%8EMidscene-js%E5%8C%BA%E5%88%AB/" rel="next" title="Playwright MCP原理以及与Midscene.js的区别">
+                <i class="fa fa-chevron-left"></i> Playwright MCP原理以及与Midscene.js的区别
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2024/11/19/2024%E5%B9%B49%E6%9C%88%E8%A2%AB%E8%A3%81%E5%90%8E%E6%89%BE%E5%B7%A5%E4%BD%9C%E7%9A%84%E6%80%BB%E7%BB%93/" rel="prev" title="2024年9月被裁后找工作的总结">
-                2024年9月被裁后找工作的总结 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -413,8 +446,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -470,6 +512,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">原理是什么</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -634,9 +692,9 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'https://jlg1128.github.io/2024/11/15/hello-world/';
-          this.page.identifier = '2024/11/15/hello-world/';
-          this.page.title = 'Hello world';
+          this.page.url = 'https://jlg1128.github.io/2025/07/08/midscene%E7%AC%94%E8%AE%B0/';
+          this.page.identifier = '2025/07/08/midscene笔记/';
+          this.page.title = '';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://https-jlg1128-github-io.disqus.com/embed.js';
