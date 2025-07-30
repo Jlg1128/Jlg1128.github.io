@@ -237,6 +237,156 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/07/29/Zustand%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avator.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JLG's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2025/07/29/Zustand%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" itemprop="url">Zustand底层原理解析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2025-07-29T10:11:57+08:00">
+                2025-07-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2025/07/29/Zustand%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2025/07/29/Zustand底层原理解析/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Zustand是最近比较火的状态管理库，是Redux的替代品，相比于Redux，它的api简单，样板代码少，包体积小只有1.2KB（minified），基于hooks来管理状态以及生态也比较丰富，有immer、persist、redux等中间件。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>src&#x2F;vanilla.ts中的代码如下，vanilla的意思是这里导出的createStore各框架都能用，而非仅限于React。<br>源码比较简单，核心是基于发布订阅模式和useSyncExternalStore实现的。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/vanilla.ts</span></span><br><span class="line"><span class="keyword">const</span> <span class="attr">createStoreImpl</span>: <span class="title class_">CreateStoreImpl</span> = <span class="function">(<span class="params">createState</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">type</span> <span class="title class_">TState</span> = <span class="title class_">ReturnType</span>&lt;<span class="keyword">typeof</span> createState&gt;</span><br><span class="line">  <span class="keyword">type</span> <span class="title class_">Listener</span> = <span class="function">(<span class="params"><span class="attr">state</span>: <span class="title class_">TState</span>, <span class="attr">prevState</span>: <span class="title class_">TState</span></span>) =&gt;</span> <span class="built_in">void</span></span><br><span class="line">  <span class="keyword">let</span> <span class="attr">state</span>: <span class="title class_">TState</span></span><br><span class="line">  <span class="comment">// 订阅者，包含了每个组件通过useSyncExternalStore绑定的重新渲染的方法</span></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">listeners</span>: <span class="title class_">Set</span>&lt;<span class="title class_">Listener</span>&gt; = <span class="keyword">new</span> <span class="title class_">Set</span>()</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 变更状态，可以只变更部分state，会做合并</span></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">setState</span>: <span class="title class_">StoreApi</span>&lt;<span class="title class_">TState</span>&gt;[<span class="string">&#x27;setState&#x27;</span>] = <span class="function">(<span class="params">partial, replace</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> nextState =</span><br><span class="line">      <span class="keyword">typeof</span> partial === <span class="string">&#x27;function&#x27;</span></span><br><span class="line">        ? (partial <span class="title function_">as</span> (<span class="attr">state</span>: <span class="title class_">TState</span>) =&gt; <span class="title class_">TState</span>)(state)</span><br><span class="line">        : partial</span><br><span class="line">    <span class="keyword">if</span> (!<span class="title class_">Object</span>.<span class="title function_">is</span>(nextState, state)) &#123;</span><br><span class="line">      <span class="keyword">const</span> previousState = state</span><br><span class="line">      state =</span><br><span class="line">        (replace ?? (<span class="keyword">typeof</span> nextState !== <span class="string">&#x27;object&#x27;</span> || nextState === <span class="literal">null</span>))</span><br><span class="line">          ? (nextState <span class="keyword">as</span> <span class="title class_">TState</span>)</span><br><span class="line">          <span class="comment">// 更新state时用的是Object.assign，更改了state的引用，所以在使用state时，需要用selector或者useShallow。</span></span><br><span class="line">          : <span class="title class_">Object</span>.<span class="title function_">assign</span>(&#123;&#125;, state, nextState)</span><br><span class="line">      <span class="comment">// setState时触发更新</span></span><br><span class="line">      listeners.<span class="title function_">forEach</span>(<span class="function">(<span class="params">listener</span>) =&gt;</span> <span class="title function_">listener</span>(state, previousState))</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// getState方法实则是返回当前Store里的最新数据</span></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">getState</span>: <span class="title class_">StoreApi</span>&lt;<span class="title class_">TState</span>&gt;[<span class="string">&#x27;getState&#x27;</span>] = <span class="function">() =&gt;</span> state</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">getInitialState</span>: <span class="title class_">StoreApi</span>&lt;<span class="title class_">TState</span>&gt;[<span class="string">&#x27;getInitialState&#x27;</span>] = <span class="function">() =&gt;</span></span><br><span class="line">    initialState</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">subscribe</span>: <span class="title class_">StoreApi</span>&lt;<span class="title class_">TState</span>&gt;[<span class="string">&#x27;subscribe&#x27;</span>] = <span class="function">(<span class="params">listener</span>) =&gt;</span> &#123;</span><br><span class="line">    listeners.<span class="title function_">add</span>(listener)</span><br><span class="line">    <span class="comment">// Unsubscribe</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> listeners.<span class="title function_">delete</span>(listener)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> api = &#123; setState, getState, getInitialState, subscribe &#125;</span><br><span class="line">  <span class="keyword">const</span> initialState = (state = <span class="title function_">createState</span>(setState, getState, api))</span><br><span class="line">  <span class="keyword">return</span> api <span class="keyword">as</span> <span class="built_in">any</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> createStore = (<span class="function">(<span class="params">createState</span>) =&gt;</span></span><br><span class="line">  createState ? <span class="title function_">createStoreImpl</span>(createState) : createStoreImpl) <span class="keyword">as</span> <span class="title class_">CreateStore</span></span><br></pre></td></tr></table></figure>
+
+<p>在React中集成</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/react.ts</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> useStore&lt;<span class="title class_">TState</span>, <span class="title class_">StateSlice</span>&gt;(</span><br><span class="line">  <span class="attr">api</span>: <span class="title class_">ReadonlyStoreApi</span>&lt;<span class="title class_">TState</span>&gt;,</span><br><span class="line">  <span class="attr">selector</span>: <span class="function">(<span class="params"><span class="attr">state</span>: <span class="title class_">TState</span></span>) =&gt;</span> <span class="title class_">StateSlice</span> = identity <span class="keyword">as</span> <span class="built_in">any</span>,</span><br><span class="line">) &#123;</span><br><span class="line">  <span class="comment">// 挂载组件更新的方法</span></span><br><span class="line">  <span class="keyword">const</span> slice = <span class="title class_">React</span>.<span class="title function_">useSyncExternalStore</span>(</span><br><span class="line">    api.<span class="property">subscribe</span>,</span><br><span class="line">    <span class="function">() =&gt;</span> <span class="title function_">selector</span>(api.<span class="title function_">getState</span>()),</span><br><span class="line">    <span class="function">() =&gt;</span> <span class="title function_">selector</span>(api.<span class="title function_">getInitialState</span>()), <span class="comment">// getServerSnapshot</span></span><br><span class="line">  )</span><br><span class="line">  <span class="title class_">React</span>.<span class="title function_">useDebugValue</span>(slice)</span><br><span class="line">  <span class="keyword">return</span> slice</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> createImpl = &lt;T&gt;<span class="function">(<span class="params"><span class="attr">createState</span>: <span class="title class_">StateCreator</span>&lt;T, [], []&gt;</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> api = <span class="title function_">createStore</span>(createState)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">useBoundStore</span>: <span class="built_in">any</span> = <span class="function">(<span class="params">selector?: <span class="built_in">any</span></span>) =&gt;</span> <span class="title function_">useStore</span>(api, selector)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 在store上挂载setState, getState, getInitialState, subscribe 这些方法</span></span><br><span class="line">  <span class="title class_">Object</span>.<span class="title function_">assign</span>(useBoundStore, api)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> useBoundStore</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> create = (&lt;T&gt;<span class="function">(<span class="params"><span class="attr">createState</span>: <span class="title class_">StateCreator</span>&lt;T, [], []&gt; | <span class="literal">undefined</span></span>) =&gt;</span></span><br><span class="line">  createState ? <span class="title function_">createImpl</span>(createState) : createImpl) <span class="keyword">as</span> <span class="title class_">Create</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，Zustand是对useSyncExternalStore进行了封装，将状态统一管理在组件外部，避免了层层传递 Props。这种方式使得状态管理更加灵活，开发过程更加高效。</p>
+<h2 id="与Redux的对比"><a href="#与Redux的对比" class="headerlink" title="与Redux的对比"></a>与Redux的对比</h2><ol>
+<li>Zustand相对于Redux需要较少的代码，并且上手成本低</li>
+<li>定义衍生状态，Redux通过自定义hook&#x2F;或者mapStateToProps实现，Zustand可以定义computed属性，相对来说比较方便。</li>
+<li>Redux是单一store，Zustand可以是多Store</li>
+</ol>
+<h2 id="与MobX的对比"><a href="#与MobX的对比" class="headerlink" title="与MobX的对比"></a>与MobX的对比</h2><ol>
+<li>没有computed缓存</li>
+<li>更新粒度没有MobX细，开发时需要考虑如何避免重复渲染。</li>
+<li>代码相对于MobX Store来说不够直观</li>
+<li>体积小，Zustand minified 之后是1.2KB，MobX是17.5</li>
+</ol>
+<p>如果不考虑体积，我觉得可以直接选MobX。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/07/12/AI%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1722,7 +1872,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
