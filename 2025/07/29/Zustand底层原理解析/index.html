@@ -27,7 +27,7 @@
 <meta property="og:description" content="介绍Zustand是最近比较火的状态管理库，是Redux的替代品，相比于Redux，它的api简单，样板代码少，包体积小只有1.2KB（minified），基于hooks来管理状态以及生态也比较丰富，有immer、persist、redux等中间件。 原理src&#x2F;vanilla.ts中的代码如下，vanilla的意思是这里导出的createStore各框架都能用，而非仅限于React。源">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-07-29T02:11:57.000Z">
-<meta property="article:modified_time" content="2025-08-05T04:45:26.619Z">
+<meta property="article:modified_time" content="2025-08-14T23:49:51.415Z">
 <meta property="article:author" content="Jlg1128">
 <meta name="twitter:card" content="summary">
 
@@ -214,7 +214,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2025-08-05 12:45:26" itemprop="dateModified" datetime="2025-08-05T12:45:26+08:00">2025-08-05</time>
+      <time title="Modified: 2025-08-15 07:49:51" itemprop="dateModified" datetime="2025-08-15T07:49:51+08:00">2025-08-15</time>
     </span>
 
   
@@ -243,7 +243,9 @@
 <li>没有computed缓存</li>
 <li>更新粒度没有MobX细，开发时需要考虑如何避免重复渲染。</li>
 <li>代码相对于MobX Store来说不够直观</li>
-<li>体积小，Zustand minified 之后是1.2KB，MobX是17.5</li>
+<li>体积小，Zustand + immer之后是14KB，mobx + mobx-react + mobx-react-lite是35KB</li>
+<li>设置新状态需要用set(state &#x3D;&gt; newState)的方式，没有MobX来的直接并且符合直觉。</li>
+<li>避免re-render不需要selector，心智负担更小，代码量更少。</li>
 </ol>
 <p>如果不考虑体积，我觉得可以直接选MobX。</p>
 
