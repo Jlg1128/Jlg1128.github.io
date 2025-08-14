@@ -19,26 +19,28 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"jlg1128.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":50,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Playwright-MCP原理Playwright有一个page._snapshotForAI方法，为html生成如下格式的字符串，基于html的aria也就是语义生成的，每个节点有个ref，ref是唯一的，元素的实现是通过这个ref来实现。 以下是通过page._snapshotForAI方法为 https:&#x2F;&#x2F;playwright.dev&#x2F; 生成的部分字符串 1234567891011121">
+    <meta name="description" content="最近看完了《认知觉醒：开启自我改变的原动力》，写个读后感，算是对这本书部分内容的实践，也就是读是最浅层的，一些道理必须要思考和实践才能变成自己的。 这本书从人的大脑由本能脑、情绪脑、理智脑组成到分析人的行为与这些组成部分的关系，最后分析如何运用让自己变得更加优秀，讲了非常多以前不知道的东西，看下来非常有收获，印象最深的是以下三个点。 急于求成是人的本能急于求成是我比较大的问题，事情都在追求快，觉得">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Playwright MCP原理以及与Midscene.js的区别">
-<meta property="og:url" content="https://jlg1128.github.io/2025/06/26/Playwright-MCP%E4%B8%8EMidscene-js%E5%8C%BA%E5%88%AB/index.html">
+<meta property="og:title" content="看完了《认知觉醒：开启自我改变的原动力》，我觉得无所不能">
+<meta property="og:url" content="https://jlg1128.github.io/2025/08/12/%E6%9C%80%E8%BF%91%E8%AF%BB%E5%AE%8C%E4%BA%86%E3%80%8A%E8%AE%A4%E7%9F%A5%E8%A7%89%E9%86%92%EF%BC%9A%E5%BC%80%E5%90%AF%E8%87%AA%E6%88%91%E6%94%B9%E5%8F%98%E7%9A%84%E5%8E%9F%E5%8A%A8%E5%8A%9B%E3%80%8B%EF%BC%8C%E6%88%91%E8%A7%89%E5%BE%97%E6%88%91%E5%8F%98%E5%BE%97%E6%97%A0%E6%89%80%E4%B8%8D%E8%83%BD/index.html">
 <meta property="og:site_name" content="JLG&#39;s Blog">
-<meta property="og:description" content="Playwright-MCP原理Playwright有一个page._snapshotForAI方法，为html生成如下格式的字符串，基于html的aria也就是语义生成的，每个节点有个ref，ref是唯一的，元素的实现是通过这个ref来实现。 以下是通过page._snapshotForAI方法为 https:&#x2F;&#x2F;playwright.dev&#x2F; 生成的部分字符串 1234567891011121">
+<meta property="og:description" content="最近看完了《认知觉醒：开启自我改变的原动力》，写个读后感，算是对这本书部分内容的实践，也就是读是最浅层的，一些道理必须要思考和实践才能变成自己的。 这本书从人的大脑由本能脑、情绪脑、理智脑组成到分析人的行为与这些组成部分的关系，最后分析如何运用让自己变得更加优秀，讲了非常多以前不知道的东西，看下来非常有收获，印象最深的是以下三个点。 急于求成是人的本能急于求成是我比较大的问题，事情都在追求快，觉得">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2025-06-26T02:04:27.000Z">
-<meta property="article:modified_time" content="2025-07-10T02:16:59.747Z">
+<meta property="og:image" content="https://jlg1128.github.io/images/aweakup/image.png">
+<meta property="article:published_time" content="2025-08-12T02:08:38.000Z">
+<meta property="article:modified_time" content="2025-08-14T02:27:23.876Z">
 <meta property="article:author" content="Jlg1128">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlg1128.github.io/images/aweakup/image.png">
 
 
-<link rel="canonical" href="https://jlg1128.github.io/2025/06/26/Playwright-MCP%E4%B8%8EMidscene-js%E5%8C%BA%E5%88%AB/">
+<link rel="canonical" href="https://jlg1128.github.io/2025/08/12/%E6%9C%80%E8%BF%91%E8%AF%BB%E5%AE%8C%E4%BA%86%E3%80%8A%E8%AE%A4%E7%9F%A5%E8%A7%89%E9%86%92%EF%BC%9A%E5%BC%80%E5%90%AF%E8%87%AA%E6%88%91%E6%94%B9%E5%8F%98%E7%9A%84%E5%8E%9F%E5%8A%A8%E5%8A%9B%E3%80%8B%EF%BC%8C%E6%88%91%E8%A7%89%E5%BE%97%E6%88%91%E5%8F%98%E5%BE%97%E6%97%A0%E6%89%80%E4%B8%8D%E8%83%BD/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://jlg1128.github.io/2025/06/26/Playwright-MCP%E4%B8%8EMidscene-js%E5%8C%BA%E5%88%AB/","path":"2025/06/26/Playwright-MCP与Midscene-js区别/","title":"Playwright MCP原理以及与Midscene.js的区别"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://jlg1128.github.io/2025/08/12/%E6%9C%80%E8%BF%91%E8%AF%BB%E5%AE%8C%E4%BA%86%E3%80%8A%E8%AE%A4%E7%9F%A5%E8%A7%89%E9%86%92%EF%BC%9A%E5%BC%80%E5%90%AF%E8%87%AA%E6%88%91%E6%94%B9%E5%8F%98%E7%9A%84%E5%8E%9F%E5%8A%A8%E5%8A%9B%E3%80%8B%EF%BC%8C%E6%88%91%E8%A7%89%E5%BE%97%E6%88%91%E5%8F%98%E5%BE%97%E6%97%A0%E6%89%80%E4%B8%8D%E8%83%BD/","path":"2025/08/12/最近读完了《认知觉醒：开启自我改变的原动力》，我觉得我变得无所不能/","title":"看完了《认知觉醒：开启自我改变的原动力》，我觉得无所不能"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Playwright MCP原理以及与Midscene.js的区别 | JLG's Blog</title>
+<title>看完了《认知觉醒：开启自我改变的原动力》，我觉得无所不能 | JLG's Blog</title>
   
 
 
@@ -127,7 +129,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Playwright-MCP%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">Playwright-MCP原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8EMidscene-js%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">与Midscene.js的区别</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A5%E4%BA%8E%E6%B1%82%E6%88%90%E6%98%AF%E4%BA%BA%E7%9A%84%E6%9C%AC%E8%83%BD"><span class="nav-number">1.</span> <span class="nav-text">急于求成是人的本能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E6%B8%85%E6%99%B0%E7%9A%84%E7%9B%AE%E6%A0%87"><span class="nav-number">2.</span> <span class="nav-text">构建清晰的目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0"><span class="nav-number">3.</span> <span class="nav-text">刻意练习</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -178,7 +180,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/06/26/Playwright-MCP%E4%B8%8EMidscene-js%E5%8C%BA%E5%88%AB/">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/08/12/%E6%9C%80%E8%BF%91%E8%AF%BB%E5%AE%8C%E4%BA%86%E3%80%8A%E8%AE%A4%E7%9F%A5%E8%A7%89%E9%86%92%EF%BC%9A%E5%BC%80%E5%90%AF%E8%87%AA%E6%88%91%E6%94%B9%E5%8F%98%E7%9A%84%E5%8E%9F%E5%8A%A8%E5%8A%9B%E3%80%8B%EF%BC%8C%E6%88%91%E8%A7%89%E5%BE%97%E6%88%91%E5%8F%98%E5%BE%97%E6%97%A0%E6%89%80%E4%B8%8D%E8%83%BD/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avator-2.jpeg">
@@ -191,12 +193,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Playwright MCP原理以及与Midscene.js的区别 | JLG's Blog">
+      <meta itemprop="name" content="看完了《认知觉醒：开启自我改变的原动力》，我觉得无所不能 | JLG's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Playwright MCP原理以及与Midscene.js的区别
+          看完了《认知觉醒：开启自我改变的原动力》，我觉得无所不能
         </h1>
 
         <div class="post-meta-container">
@@ -207,14 +209,14 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2025-06-26 10:04:27" itemprop="dateCreated datePublished" datetime="2025-06-26T10:04:27+08:00">2025-06-26</time>
+      <time title="Created: 2025-08-12 10:08:38" itemprop="dateCreated datePublished" datetime="2025-08-12T10:08:38+08:00">2025-08-12</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2025-07-10 10:16:59" itemprop="dateModified" datetime="2025-07-10T10:16:59+08:00">2025-07-10</time>
+      <time title="Modified: 2025-08-14 10:27:23" itemprop="dateModified" datetime="2025-08-14T10:27:23+08:00">2025-08-14</time>
     </span>
 
   
@@ -226,24 +228,19 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="Playwright-MCP原理"><a href="#Playwright-MCP原理" class="headerlink" title="Playwright-MCP原理"></a>Playwright-MCP原理</h2><p>Playwright有一个page._snapshotForAI方法，为html生成如下格式的字符串，基于html的aria也就是语义生成的，每个节点有个ref，ref是唯一的，元素的实现是通过这个ref来实现。</p>
-<p>以下是通过page._snapshotForAI方法为 <a target="_blank" rel="noopener" href="https://playwright.dev/">https://playwright.dev/</a> 生成的部分字符串</p>
-<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">- generic [ref=e2]:</span><br><span class="line">  - region &quot;Skip to main content&quot;:</span><br><span class="line">    - link &quot;Skip to main content&quot; [ref=e4] [cursor=pointer]:</span><br><span class="line">      - /url: &quot;#__docusaurus_skipToContent_fallback&quot;</span><br><span class="line">  - navigation &quot;Main&quot; [ref=e5]:</span><br><span class="line">    - generic [ref=e6]:</span><br><span class="line">      - generic [ref=e7]:</span><br><span class="line">        - link &quot;Playwright logo Playwright&quot; [ref=e8] [cursor=pointer]:</span><br><span class="line">          - /url: /</span><br><span class="line">          - img &quot;Playwright logo&quot; [ref=e10] [cursor=pointer]</span><br><span class="line">          - generic [ref=e11] [cursor=pointer]: Playwright</span><br><span class="line">        - link &quot;Docs&quot; [ref=e12] [cursor=pointer]:</span><br><span class="line">          - /url: /docs/intro</span><br><span class="line">        - link &quot;API&quot; [ref=e13] [cursor=pointer]:</span><br><span class="line">          - /url: /docs/api/class-playwright</span><br><span class="line">        - button &quot;Node.js&quot; [ref=e15] [cursor=pointer]</span><br><span class="line">        - link &quot;Community&quot; [ref=e16] [cursor=pointer]:</span><br><span class="line">          - /url: /community/welcome</span><br></pre></td></tr></table></figure>
+    <div class="post-body" itemprop="articleBody"><p>最近看完了《认知觉醒：开启自我改变的原动力》，写个读后感，算是对这本书部分内容的实践，也就是读是最浅层的，一些道理必须要思考和实践才能变成自己的。</p>
+<p>这本书从人的大脑由本能脑、情绪脑、理智脑组成到分析人的行为与这些组成部分的关系，最后分析如何运用让自己变得更加优秀，讲了非常多以前不知道的东西，看下来非常有收获，印象最深的是以下三个点。</p>
+<h3 id="急于求成是人的本能"><a href="#急于求成是人的本能" class="headerlink" title="急于求成是人的本能"></a>急于求成是人的本能</h3><p>急于求成是我比较大的问题，事情都在追求快，觉得时间很宝贵，必须要在xx小时内完成，否则就是浪费时间，所以在遇到特别困难的点时总想着没时间了模棱两可的处理一下，最后做出来的东西其实自己也不是特别满意。</p>
+<p>这本书里讲耐心是制胜的法宝，我非常认可，有时候慢就是快，慢下来多去思考，遇到困难就去把困难拆解，单独去解决，所有都解决了再在之前的基础上去做迭代优化，最后的成功想做的不好都难。</p>
+<p>越能克服天性，耐心水平越高，越能成功。</p>
+<h3 id="构建清晰的目标"><a href="#构建清晰的目标" class="headerlink" title="构建清晰的目标"></a>构建清晰的目标</h3><p>有时候行动力不强，是自己的目标不够明确清晰，想想也是，在早上拖延刷手机不起来学习最根本的原因我觉得一是要做的事情有很多，大脑很模糊，二是对自身的未来方向不够明确，信念不够强，比如我想做前端架构师，就得去拼命钻研开源项目源码、了解他们的思想，我不想成为平庸的人。有了信念加上清晰的目标，行动力会非常强大。</p>
+<p>所以我每天晚上都会给第二天早上上班前的空闲时间定一个明确的目标，写具体事情的blog、看具体开园项目的源码，事情都确定下来。</p>
+<h3 id="刻意练习"><a href="#刻意练习" class="headerlink" title="刻意练习"></a>刻意练习</h3><p>一些道理和知识点在忽然get到的时候会非常开心，但其实这个时候不应该那么开心，因为这些东西还没有成为自己的。<br>在我们阅读鸡汤、技术博客&#x2F;视频甚至学英语时了解到的内容必须要在日常中多实践，get到 -&gt; 输出&#x2F;思考 -&gt; 反复实践才能成为自己的。</p>
+<p>练习也是有技巧的，应当在舒适区边缘，内容既不要太难也不要太容易，假如太困难，可以拆解成一个个小问题逐一解决，也相当于在舒适区边缘。  </p>
+<div style="text-align: center;">
+<img src="/images/aweakup/image.png" width="700" alt="studymethod">
+</div>
 
-<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ol>
-<li>假如网站内容多，生成的snapshot就很大，与大模型交互的所需要的token就多，会存在费用高，token数限制的问题。</li>
-<li>假如网站没做好aria无障碍，可能会存在识别精度低的问题。</li>
-</ol>
-<h2 id="与Midscene-js的区别"><a href="#与Midscene-js的区别" class="headerlink" title="与Midscene.js的区别"></a>与Midscene.js的区别</h2><ol>
-<li><p>定位准确度<br>整体差不多，Playwright-MCP为每个节点生成ref，基于ref定位，而Midscene.js基于视觉大模型获取boundingBox，然后进行范围匹配，都是通过大模型语义识别。</p>
-</li>
-<li><p>可定位区域<br>Playwright-MCP支持整个网站，Midscene.js基于可视区域，假如有个按钮在弹窗下面，Midscene.js就无法识别了。</p>
-</li>
-<li><p>定位速度<br>Playwright-MCP较快，两个case 5s内完成了，但Midscene.js基于视觉大模型，速度较慢，本地试了下平均一个请求5-10s。</p>
-</li>
-<li><p>测试报告<br>Midscene.js有完善的用例报告回放，Playwright-MCP需要自己去接入或者实现一套。</p>
-</li>
-</ol>
 
     </div>
 
@@ -257,14 +254,11 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2025/06/23/Midscene.js%E5%8E%9F%E7%90%86/" rel="prev" title="Midscene.js原理">
-                  <i class="fa fa-angle-left"></i> Midscene.js原理
+                <a href="/2025/08/07/React-Context-%E5%8E%9F%E7%90%86/" rel="prev" title="React Context 原理">
+                  <i class="fa fa-angle-left"></i> React Context 原理
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2025/07/12/AI%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E7%AC%94%E8%AE%B0/" rel="next" title="AI数据中心笔记">
-                  AI数据中心笔记 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
