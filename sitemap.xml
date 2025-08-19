@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://jlg1128.github.io/2025/06/23/midscene-principles/</loc>
+    
+    <lastmod>2025-08-19</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://jlg1128.github.io/tags/index.html</loc>
+    
+    <lastmod>2025-08-19</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://jlg1128.github.io/2025/08/12/cognition-reading-notes/</loc>
     
     <lastmod>2025-08-19</lastmod>
@@ -83,15 +101,6 @@
   </url>
   
   <url>
-    <loc>https://jlg1128.github.io/2025/06/23/midscene-principles/</loc>
-    
-    <lastmod>2025-08-19</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://jlg1128.github.io/2025/05/02/astro-architecture-principles/</loc>
     
     <lastmod>2025-08-19</lastmod>
@@ -137,14 +146,14 @@
 
   
   <url>
-    <loc>https://jlg1128.github.io/tags/FE/</loc>
+    <loc>https://jlg1128.github.io/tags/tech/</loc>
     <lastmod>2025-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://jlg1128.github.io/tags/tech/</loc>
+    <loc>https://jlg1128.github.io/tags/FE/</loc>
     <lastmod>2025-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
