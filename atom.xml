@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>JLG&#39;s Blog</title>
+  
+  
+  <link href="https://jlg1128.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://jlg1128.github.io/"/>
+  <updated>2025-10-30T02:02:28.378Z</updated>
+  <id>https://jlg1128.github.io/</id>
+  
+  <author>
+    <name>Jlg1128</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Yalc使scss文件缓存失效问题排查</title>
+    <link href="https://jlg1128.github.io/2025/10/28/Yalc-breaking-scss-file-caching/"/>
+    <id>https://jlg1128.github.io/2025/10/28/Yalc-breaking-scss-file-caching/</id>
+    <published>2025-10-28T00:25:00.000Z</published>
+    <updated>2025-10-30T02:02:28.378Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;Yalc是类似npm link&amp;#x2F;yarn link本地开发库时快速调试的工具。&lt;/p&gt;
+&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="FE" scheme="https://jlg1128.github.io/tags/FE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>手撕源码: mobx</title>
+    <link href="https://jlg1128.github.io/2025/08/20/undefined/"/>
+    <id>https://jlg1128.github.io/2025/08/20/undefined/</id>
+    <published>2025-08-20T02:00:07.000Z</published>
+    <updated>2025-08-20T02:08:16.162Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;初始化&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;get&lt;br&gt;bindDependencies&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;reaction.observing_ &amp;#x3D;</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>看完了《认知觉醒：开启自我改变的原动力》，我觉得无所不能</title>
+    <link href="https://jlg1128.github.io/2025/08/12/cognition-reading-notes/"/>
+    <id>https://jlg1128.github.io/2025/08/12/cognition-reading-notes/</id>
+    <published>2025-08-12T02:08:38.000Z</published>
+    <updated>2025-10-28T00:48:53.441Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;最近看完了《认知觉醒：开启自我改变的原动力》，写个读后感，算是对这本书部分内容的实践，也就是读是最浅层的，一些道理必须要思考和实践才能变成自己的。&lt;/p&gt;
+&lt;p&gt;这本书从人的大脑由本能脑、情绪脑、理智脑组成到分析人的行为与这些组成部分的关系，最后分析如何运用让自己变得更加优</summary>
+        
+      
+    
+    
+    
+    
+    <category term="think" scheme="https://jlg1128.github.io/tags/think/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>React Context 原理</title>
+    <link href="https://jlg1128.github.io/2025/08/07/react-context-principles/"/>
+    <id>https://jlg1128.github.io/2025/08/07/react-context-principles/</id>
+    <published>2025-08-07T01:11:44.000Z</published>
+    <updated>2025-08-19T02:08:50.336Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;最近在调研状态管理库，顺便研究了下Context(React 18.1)的原理，&lt;/p&gt;
+&lt;p&gt;以下解析基于该&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="FE" scheme="https://jlg1128.github.io/tags/FE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Zustand底层原理解析</title>
+    <link href="https://jlg1128.github.io/2025/07/29/zustand-principles/"/>
+    <id>https://jlg1128.github.io/2025/07/29/zustand-principles/</id>
+    <published>2025-07-29T02:11:57.000Z</published>
+    <updated>2025-08-19T02:11:06.416Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="FE" scheme="https://jlg1128.github.io/tags/FE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>AI数据中心笔记</title>
+    <link href="https://jlg1128.github.io/2025/07/12/ai-datacenter/"/>
+    <id>https://jlg1128.github.io/2025/07/12/ai-datacenter/</id>
+    <published>2025-07-12T02:06:19.000Z</published>
+    <updated>2025-08-19T02:06:02.148Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;这几年AI发展迅速，算力需求爆炸式增长，能源是AI发展的瓶颈之一。&lt;/p&gt;
+&lt;h2 id=&quot;全球能源&quot;&gt;&lt;a href=&quot;#全球能源&quot; class=&quot;headerlink&quot; title=&quot;全球能源&quot;&gt;&lt;/a&gt;全球能源&lt;/h2&gt;&lt;h3 id=&quot;发电结构&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="tech" scheme="https://jlg1128.github.io/tags/tech/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Playwright MCP原理以及与Midscene.js的区别</title>
+    <link href="https://jlg1128.github.io/2025/06/26/playwright-mcp-compare-with-midcene/"/>
+    <id>https://jlg1128.github.io/2025/06/26/playwright-mcp-compare-with-midcene/</id>
+    <published>2025-06-26T02:04:27.000Z</published>
+    <updated>2025-08-19T02:08:05.222Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Playwright-MCP原理&quot;&gt;&lt;a href=&quot;#Playwright-MCP原理&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="FE" scheme="https://jlg1128.github.io/tags/FE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Midscene.js原理</title>
+    <link href="https://jlg1128.github.io/2025/06/23/midscene-principles/"/>
+    <id>https://jlg1128.github.io/2025/06/23/midscene-principles/</id>
+    <published>2025-06-23T01:55:22.000Z</published>
+    <updated>2025-08-19T04:16:08.757Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;最近浏览器agent例如Midscene.js、stagehand很火，好奇去体验了下然后了解了下原理。&lt;/p&gt;
+&lt;h2 id=&quot;浏览器agent是什么&quot;&gt;&lt;a href=&quot;#浏览器agent是什么&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="FE" scheme="https://jlg1128.github.io/tags/FE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Astro Island架构实现原理</title>
+    <link href="https://jlg1128.github.io/2025/05/02/astro-architecture-principles/"/>
+    <id>https://jlg1128.github.io/2025/05/02/astro-architecture-principles/</id>
+    <published>2025-05-02T01:54:20.000Z</published>
+    <updated>2025-08-19T02:06:48.967Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;什么是Islands架构&quot;&gt;&lt;a href=&quot;#什么是Islands架构&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="FE" scheme="https://jlg1128.github.io/tags/FE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>React状态管理库对比</title>
+    <link href="https://jlg1128.github.io/2025/04/14/react-state-manager/"/>
+    <id>https://jlg1128.github.io/2025/04/14/react-state-manager/</id>
+    <published>2025-04-14T02:06:47.000Z</published>
+    <updated>2025-08-19T02:09:41.972Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;对比React常见的状态管理库context、Redux、MobX、zustand、jotai以及介绍它们的使用场景&lt;/p&gt;
+&lt;h2 id=&quot;context&quot;&gt;&lt;a href=&quot;#context&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="FE" scheme="https://jlg1128.github.io/tags/FE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Webpack如何保证构建产物的加载顺序？</title>
+    <link href="https://jlg1128.github.io/2025/04/03/webpack-bundler-execute-order/"/>
+    <id>https://jlg1128.github.io/2025/04/03/webpack-bundler-execute-order/</id>
+    <published>2025-04-03T01:03:36.000Z</published>
+    <updated>2025-08-19T02:10:03.339Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;假如通过splitChunks分出了多个initialChunk，Webpack如何保证这些产物的加载顺序？下文参考这个&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="FE" scheme="https://jlg1128.github.io/tags/FE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>React动态加载-@loadable-components源码解析</title>
+    <link href="https://jlg1128.github.io/2025/04/02/loadable-components-principles/"/>
+    <id>https://jlg1128.github.io/2025/04/02/loadable-components-principles/</id>
+    <published>2025-04-02T00:22:18.000Z</published>
+    <updated>2025-08-19T02:09:12.976Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h2&gt;&lt;p&gt;loadable-components是React动态加载的库，支持组件&amp;#x2F;库懒加载、动态引入。&lt;/p&gt;
+&lt;h3</summary>
+        
+      
+    
+    
+    
+    
+    <category term="FE" scheme="https://jlg1128.github.io/tags/FE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2024年9月被裁后找工作的总结</title>
+    <link href="https://jlg1128.github.io/2024/11/19/Summary-after-being-laid-off/"/>
+    <id>https://jlg1128.github.io/2024/11/19/Summary-after-being-laid-off/</id>
+    <published>2024-11-19T03:16:21.000Z</published>
+    <updated>2025-08-19T02:10:43.229Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;情况&quot;&gt;&lt;a href=&quot;#情况&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="think" scheme="https://jlg1128.github.io/tags/think/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello world</title>
+    <link href="https://jlg1128.github.io/2024/11/15/hello-world/"/>
+    <id>https://jlg1128.github.io/2024/11/15/hello-world/</id>
+    <published>2024-11-15T14:36:00.000Z</published>
+    <updated>2025-08-27T10:54:12.077Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;输出倒逼输入&lt;/p&gt;
+</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+</feed>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon_io/favicon-16x16.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"jlg1128.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":50,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="什么是Islands架构Islands架构类似于微前端架构，但Islands主要是为了优化页面性能和用户体验，而微前端是为了解耦不同业务模块。   为什么要使用Islands 可以优先展示或者水合重要内容，比如电商商品详情页可以优先展示和水合商品主图、商品描述、购买按钮。 浏览器加载的js变少，能够提升TTI。  使用Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。   d">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Astro Island架构实现原理">
+<meta property="og:url" content="https://jlg1128.github.io/2025/05/02/astro-architecture-principles/index.html">
+<meta property="og:site_name" content="JLG&#39;s Blog">
+<meta property="og:description" content="什么是Islands架构Islands架构类似于微前端架构，但Islands主要是为了优化页面性能和用户体验，而微前端是为了解耦不同业务模块。   为什么要使用Islands 可以优先展示或者水合重要内容，比如电商商品详情页可以优先展示和水合商品主图、商品描述、购买按钮。 浏览器加载的js变少，能够提升TTI。  使用Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。   d">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jlg1128.github.io/images/island/arch.png">
+<meta property="article:published_time" content="2025-05-02T01:54:20.000Z">
+<meta property="article:modified_time" content="2025-08-19T02:06:48.967Z">
+<meta property="article:author" content="Jlg1128">
+<meta property="article:tag" content="FE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jlg1128.github.io/images/island/arch.png">
+
+
+<link rel="canonical" href="https://jlg1128.github.io/2025/05/02/astro-architecture-principles/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://jlg1128.github.io/2025/05/02/astro-architecture-principles/","path":"2025/05/02/astro-architecture-principles/","title":"Astro Island架构实现原理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Astro Island架构实现原理 | JLG's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="JLG's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JLG's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFIslands%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">什么是Islands架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8Islands"><span class="nav-number">2.</span> <span class="nav-text">为什么要使用Islands</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Astro%E6%9C%89%E5%BE%88%E5%A4%9A%E6%8C%87%E4%BB%A4%E8%A1%A8%E7%A4%BA%E4%B8%80%E4%B8%AA%E7%BB%84%E4%BB%B6%E6%98%AF%E5%9C%A8%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%B8%B2%E6%9F%93%E8%BF%98%E6%98%AF%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%B8%B2%E6%9F%93%E3%80%81%E6%B8%B2%E6%9F%93%E6%97%B6%E6%9C%BA%E3%80%82"><span class="nav-number">3.1.</span> <span class="nav-text">Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8client-load%E6%A0%87%E8%AE%B0%E7%BB%84%E4%BB%B6%E4%B8%BAIsland%E7%BB%84%E4%BB%B6%EF%BC%8C%E5%B9%B6%E4%B8%94%E9%AB%98%E4%BC%98%E5%85%88%E7%BA%A7%E6%B0%B4%E5%90%88"><span class="nav-number">4.</span> <span class="nav-text">使用client:load标记组件为Island组件，并且高优先级水合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">5.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jlg1128"
+      src="/images/avator-2.jpeg">
+  <p class="site-author-name" itemprop="name">Jlg1128</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jlg1128" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jlg1128" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/jlg1128@163.com" title="E-Mail → jlg1128@163.com" rel="noopener me"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml" rel="noopener me"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/05/02/astro-architecture-principles/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avator-2.jpeg">
+      <meta itemprop="name" content="Jlg1128">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JLG's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Astro Island架构实现原理 | JLG's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Astro Island架构实现原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-05-02 09:54:20" itemprop="dateCreated datePublished" datetime="2025-05-02T09:54:20+08:00">2025-05-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-08-19 10:06:48" itemprop="dateModified" datetime="2025-08-19T10:06:48+08:00">2025-08-19</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="什么是Islands架构"><a href="#什么是Islands架构" class="headerlink" title="什么是Islands架构"></a>什么是Islands架构</h2><p>Islands架构类似于微前端架构，但Islands主要是为了优化页面性能和用户体验，而微前端是为了解耦不同业务模块。</p>
+<div align=right><img src="/images/island/arch.png" alt="island" width="500"/></div>
+
+<h2 id="为什么要使用Islands"><a href="#为什么要使用Islands" class="headerlink" title="为什么要使用Islands"></a>为什么要使用Islands</h2><ol>
+<li>可以优先展示或者水合重要内容，比如电商商品详情页可以优先展示和水合商品主图、商品描述、购买按钮。</li>
+<li>浏览器加载的js变少，能够提升TTI。</li>
+</ol>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。"><a href="#Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。" class="headerlink" title="Astro有很多指令表示一个组件是在服务端渲染还是客户端渲染、渲染时机。"></a>Astro有很多<a target="_blank" rel="noopener" href="https://docs.astro.build/zh-cn/reference/directives-reference/#clientloadhttps://docs.astro.build/zh-cn/reference/directives-reference/#clientload">指令</a>表示一个组件是在服务端渲染还是客户端渲染、渲染时机。</h3><table>
+<thead>
+<tr>
+<th>directives</th>
+<th>description</th>
+<th>priority</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>client:load</td>
+<td>页面加载后立即水合</td>
+<td>high</td>
+</tr>
+<tr>
+<td>client:idle</td>
+<td>在requestIdleCallback中进行水合</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>最大等待时间后水合</td>
+<td>low</td>
+</tr>
+<tr>
+<td>client:visible</td>
+<td>进入视口后水合</td>
+<td>low</td>
+</tr>
+<tr>
+<td>client:media</td>
+<td>媒体查询后水合</td>
+<td>low</td>
+</tr>
+<tr>
+<td>client:only</td>
+<td>不进行服务端渲染</td>
+<td>low</td>
+</tr>
+<tr>
+<td>server:defer</td>
+<td>按需渲染</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>可以使用这个<a target="_blank" rel="noopener" href="https://github.com/withastro/astro/tree/dde8fd96cd6a7821b95f47ede7e30c36dad244d9/examples/with-nanostores">astro的模版</a>快速搭建一个demo</p>
+<h2 id="使用client-load标记组件为Island组件，并且高优先级水合"><a href="#使用client-load标记组件为Island组件，并且高优先级水合" class="headerlink" title="使用client:load标记组件为Island组件，并且高优先级水合"></a>使用client:load标记组件为Island组件，并且高优先级水合</h2><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">BuyNowButton</span> <span class="attr">client</span>:load onClick=&#123;handleClick&#125;&gt;点击购买&lt;/<span class="title class_">BuyNowButton</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>通过Astro的<a target="_blank" rel="noopener" href="https://github.com/withastro/compiler">compiler</a>将astro代码编译成如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; render <span class="keyword">as</span> $$render, createAstro <span class="keyword">as</span> $$createAstro, createComponent <span class="keyword">as</span> $$createComponent, renderComponent <span class="keyword">as</span> $$renderComponent &#125; <span class="keyword">from</span> <span class="string">&quot;astro/compiler-runtime&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">BuyNowButton</span> <span class="keyword">from</span> <span class="string">&quot;../components/BuyNowButton&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; withBase &#125; <span class="keyword">from</span> <span class="string">&quot;../utils&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> $$Astro = $$createAstro();</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Astro</span> = $$Astro;</span><br><span class="line"><span class="keyword">const</span> $$Index = $$createComponent(<span class="function">(<span class="params">$$result, $$props, $$slots</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="title class_">Astro2</span> = $$result.<span class="title function_">createAstro</span>($$Astro, $$props, $$slots);</span><br><span class="line">    <span class="title class_">Astro2</span>.<span class="property">self</span> = $$Index;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $$render<span class="string">`<span class="subst">$&#123;$$renderComponent($$result, <span class="string">&quot;BuyNowButton&quot;</span>, BuyNowButton, &#123; </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:load&quot;</span>: <span class="literal">true</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:component-hydration&quot;</span>: <span class="string">&quot;load&quot;</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:component-path&quot;</span>: <span class="string">&quot;/with-nanostores/src/components/BuyNowButton&quot;</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;client:component-export&quot;</span>: <span class="string">&quot;default&quot;</span>, </span></span></span><br><span class="line"><span class="subst"><span class="string">        <span class="string">&quot;data-astro-cid-j7pv25f6&quot;</span>: <span class="literal">true</span> </span></span></span><br><span class="line"><span class="subst"><span class="string">    &#125;)&#125;</span>`</span>;</span><br><span class="line">&#125;, <span class="string">&quot;/with-nanostores/src/pages/index.astro&quot;</span>, <span class="keyword">void</span> <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在renderComponent中会将标记为client:load的组件渲染成</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">astro-island</span> <span class="attr">uid</span>=<span class="string">&quot;Z1xkbrp&quot;</span> <span class="attr">component-url</span>=<span class="string">&quot;/src/components/BuyNowButton.tsx&quot;</span> <span class="attr">component-export</span>=<span class="string">&quot;default&quot;</span> <span class="attr">renderer-url</span>=<span class="string">&quot;/node_modules/.vite/deps/@astrojs_preact_client-dev__js.js?v=ec7158f6&quot;</span> <span class="attr">props</span>=<span class="string">&quot;&#123;<span class="symbol">&amp;quot;</span>data-astro-cid-sckkx6r4<span class="symbol">&amp;quot;</span>:[0,true]&#125;&quot;</span> <span class="attr">client</span>=<span class="string">&quot;load&quot;</span> <span class="attr">before-hydration-url</span>=<span class="string">&quot;/@id/astro:scripts/before-hydration.js&quot;</span> <span class="attr">opts</span>=<span class="string">&quot;&#123;<span class="symbol">&amp;quot;</span>name<span class="symbol">&amp;quot;</span>:<span class="symbol">&amp;quot;</span>BuyNowButton<span class="symbol">&amp;quot;</span>,<span class="symbol">&amp;quot;</span>value<span class="symbol">&amp;quot;</span>:true&#125;&quot;</span> <span class="attr">server-render-time</span>=<span class="string">&quot;1.461416999999983&quot;</span> <span class="attr">await-children</span>=<span class="string">&quot;&quot;</span> <span class="attr">client-render-time</span>=<span class="string">&quot;1&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">aside</span> <span class="attr">hidden</span>=<span class="string">&quot;&quot;</span> <span class="attr">class</span>=<span class="string">&quot;_container_jwp5b_1&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">p</span>&gt;</span>Your cart is empty!<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">aside</span>&gt;</span><span class="tag">&lt;/<span class="name">astro-island</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>服务端返回的就是上面的html，并且会返回astro-island.js文件，该文件注册astro-island自定义元素，<br>该元素在connectCallback后获取astro dom上的component-url、renderer-url（hydrator水合器）和props。最后await hydrator(&lt;Component {…props}&#x2F;&gt;)渲染组件</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://jasonformat.com/islands-architecture/">https://jasonformat.com/islands-architecture/</a><br><a target="_blank" rel="noopener" href="https://docs.astro.build/zh-cn/concepts/why-astro/#_top">https://docs.astro.build/zh-cn/concepts/why-astro/#_top</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FE/" rel="tag"># FE</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/14/react-state-manager/" rel="prev" title="React状态管理库对比">
+                  <i class="fa fa-angle-left"></i> React状态管理库对比
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/23/midscene-principles/" rel="next" title="Midscene.js原理">
+                  Midscene.js原理 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Jlg1128</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"Jlg1128/Jlg1128.github.io","repo_id":"MDEwOlJlcG9zaXRvcnkzMTcxNTI0NzQ=","category":"Announcements","category_id":"DIC_kwDOEudc2s4CtyRZ","mapping":"pathname","strict":0,"reactions_enabled":1,"emit_metadata":0,"theme":"preferred_color_scheme","lang":"en","crossorigin":"anonymous","input_position":"bottom","loading":"lazy"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-strict'           : CONFIG.giscus.strict,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>

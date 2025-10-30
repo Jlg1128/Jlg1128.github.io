@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon_io/favicon-16x16.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"jlg1128.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":50,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="对比React常见的状态管理库context、Redux、MobX、zustand、jotai以及介绍它们的使用场景 contextcontext被创造出来就是为了解决prop drilling的问题，但是它存在重复渲染的问题，可以用https:&#x2F;&#x2F;github.com&#x2F;dai-shi&#x2F;use-context-selector解决这个问题，也可以不依赖任何库去解决use-context-selec">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React状态管理库对比">
+<meta property="og:url" content="https://jlg1128.github.io/2025/04/14/react-state-manager/index.html">
+<meta property="og:site_name" content="JLG&#39;s Blog">
+<meta property="og:description" content="对比React常见的状态管理库context、Redux、MobX、zustand、jotai以及介绍它们的使用场景 contextcontext被创造出来就是为了解决prop drilling的问题，但是它存在重复渲染的问题，可以用https:&#x2F;&#x2F;github.com&#x2F;dai-shi&#x2F;use-context-selector解决这个问题，也可以不依赖任何库去解决use-context-selec">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-04-14T02:06:47.000Z">
+<meta property="article:modified_time" content="2025-08-19T02:09:41.972Z">
+<meta property="article:author" content="Jlg1128">
+<meta property="article:tag" content="FE">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://jlg1128.github.io/2025/04/14/react-state-manager/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://jlg1128.github.io/2025/04/14/react-state-manager/","path":"2025/04/14/react-state-manager/","title":"React状态管理库对比"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>React状态管理库对比 | JLG's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="JLG's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JLG's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#context"><span class="nav-number">1.</span> <span class="nav-text">context</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redux-React-Redux"><span class="nav-number">2.</span> <span class="nav-text">Redux + React-Redux</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#zustand"><span class="nav-number">3.</span> <span class="nav-text">zustand</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MobX"><span class="nav-number">4.</span> <span class="nav-text">MobX</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jotai"><span class="nav-number">5.</span> <span class="nav-text">jotai</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#valtio"><span class="nav-number">6.</span> <span class="nav-text">valtio</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%95%E6%97%B6%E4%BD%BF%E7%94%A8"><span class="nav-number">7.</span> <span class="nav-text">何时使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-reducer"><span class="nav-number">7.1.</span> <span class="nav-text">Context + reducer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MobX-1"><span class="nav-number">7.2.</span> <span class="nav-text">MobX</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#zustand-1"><span class="nav-number">7.3.</span> <span class="nav-text">zustand</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#React-Redux"><span class="nav-number">7.4.</span> <span class="nav-text">React-Redux</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jotai-1"><span class="nav-number">7.5.</span> <span class="nav-text">jotai</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">8.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jlg1128"
+      src="/images/avator-2.jpeg">
+  <p class="site-author-name" itemprop="name">Jlg1128</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jlg1128" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jlg1128" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/jlg1128@163.com" title="E-Mail → jlg1128@163.com" rel="noopener me"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml" rel="noopener me"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/04/14/react-state-manager/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avator-2.jpeg">
+      <meta itemprop="name" content="Jlg1128">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JLG's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="React状态管理库对比 | JLG's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          React状态管理库对比
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-04-14 10:06:47" itemprop="dateCreated datePublished" datetime="2025-04-14T10:06:47+08:00">2025-04-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-08-19 10:09:41" itemprop="dateModified" datetime="2025-08-19T10:09:41+08:00">2025-08-19</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>对比React常见的状态管理库context、Redux、MobX、zustand、jotai以及介绍它们的使用场景</p>
+<h2 id="context"><a href="#context" class="headerlink" title="context"></a>context</h2><p>context被创造出来就是为了解决<a target="_blank" rel="noopener" href="https://react.dev/learn/passing-data-deeply-with-context">prop drilling</a>的问题，但是它存在重复渲染的问题，可以用<a href="use-context-selector">https://github.com/dai-shi/use-context-selector</a>解决这个问题，也可以不依赖任何库去解决<a target="_blank" rel="noopener" href="https://github.com/dai-shi/use-context-selector/issues/109#issuecomment-1785147682">use-context-selector</a></p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">ThemeContext</span> = <span class="title function_">createContext</span>(<span class="string">&#x27;light&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Main</span> = (<span class="params">&#123; children &#125;</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">ThemeContext.Provider</span> <span class="attr">value</span>=<span class="string">&#123;useState(</span>&#x27;<span class="attr">light</span>&#x27;)&#125;&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;children&#125;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">ThemeContext.Provider</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">App</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> theme = <span class="title function_">useContext</span>(<span class="title class_">ThemeContext</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Redux-React-Redux"><a href="#Redux-React-Redux" class="headerlink" title="Redux + React-Redux"></a>Redux + React-Redux</h2><p>相对于context，redux是基于单向数据流，遵循不可变数据的原则性能较好易于调试、易于扩展、<a target="_blank" rel="noopener" href="https://redux.js.org/understanding/history-and-design/middleware">middleware支持</a>、生态较好，开发调试devtool比较方便，但是上手成本高，需要理解单向数据流的概念。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> counterSlice = <span class="title function_">createSlice</span>(&#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="string">&#x27;counter&#x27;</span>,</span><br><span class="line">  <span class="attr">initialState</span>: &#123;</span><br><span class="line">    <span class="attr">value</span>: <span class="number">0</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">reducers</span>: &#123;</span><br><span class="line">    <span class="attr">increment</span>: <span class="function">(<span class="params">state</span>) =&gt;</span> &#123;</span><br><span class="line">      state.<span class="property">value</span> += <span class="number">1</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">decrement</span>: <span class="function">(<span class="params">state</span>) =&gt;</span> &#123;</span><br><span class="line">      state.<span class="property">value</span> -= <span class="number">1</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">incrementByAmount</span>: <span class="function">(<span class="params">state, action</span>) =&gt;</span> &#123;</span><br><span class="line">      state.<span class="property">value</span> += action.<span class="property">payload</span></span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="title function_">configureStore</span>(&#123;</span><br><span class="line">  <span class="attr">reducer</span>: &#123;</span><br><span class="line">    <span class="attr">counter</span>: counterSlice.<span class="property">reducer</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Counter</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> count = <span class="title function_">useSelector</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">counter</span>.<span class="property">value</span>)</span><br><span class="line">  <span class="keyword">const</span> dispatch = <span class="title function_">useDispatch</span>()</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">button</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">aria-label</span>=<span class="string">&quot;Increment value&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> dispatch(increment())&#125;</span></span><br><span class="line"><span class="language-xml">        &gt;</span></span><br><span class="line"><span class="language-xml">          Increment</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">span</span>&gt;</span>&#123;count&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">button</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">aria-label</span>=<span class="string">&quot;Decrement value&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> dispatch(decrement())&#125;</span></span><br><span class="line"><span class="language-xml">        &gt;</span></span><br><span class="line"><span class="language-xml">          Decrement</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="zustand"><a href="#zustand" class="headerlink" title="zustand"></a>zustand</h2><p>相对于Redux有什么优势，参考<a target="_blank" rel="noopener" href="https://github.com/pmndrs/zustand/tree/main?tab=readme-ov-file#why-zustand-over-redux">官方</a>。</p>
+<ol>
+<li>zustand概念和使用上简单</li>
+<li>Redux要使用Provider</li>
+<li>zustand可以transient updates，就是组件能监听状态变更并且不造成重复渲染。<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> useBearStore = <span class="title function_">create</span>(<span class="function">(<span class="params">set</span>) =&gt;</span> (&#123;</span><br><span class="line">  <span class="attr">bears</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">increasePopulation</span>: <span class="function">() =&gt;</span> <span class="title function_">set</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">bears</span>: state.<span class="property">bears</span> + <span class="number">1</span> &#125;)),</span><br><span class="line">  <span class="attr">removeAllBears</span>: <span class="function">() =&gt;</span> <span class="title function_">set</span>(&#123; <span class="attr">bears</span>: <span class="number">0</span> &#125;),</span><br><span class="line">&#125;))</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">BearCounter</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> bears = <span class="title function_">useBearStore</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">bears</span>)</span><br><span class="line">  <span class="keyword">const</span> increasePopulation = <span class="title function_">useBearStore</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">increasePopulation</span>)</span><br><span class="line">  <span class="keyword">return</span> (<span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;bears&#125; around here ...<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;increasePopulation&#125;</span>&gt;</span>one up<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="MobX"><a href="#MobX" class="headerlink" title="MobX"></a>MobX</h2><p>MobX通过透明的函数响应式编程使得状态管理变得简单和可扩展。MobX背后的哲学很简单: 任何源自应用状态的东西都应该自动地获得，其中包括UI、数据序列化等等，核心重点就是: MobX通过响应式编程实现简单高效，可扩展的状态管理。</p>
+<p>相对于react-redux，MobX的优势主要在开发简单，不用太多样板代码，但是因为状态可以在多处修改导致追踪状态比较麻烦，并且MobX不需要selector就能避免re-reneder，设置值的方式也不需要像Zustand那样必须要set(state &#x3D;&gt; newState)，更符合直觉，体验更好</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Timer</span> &#123;</span><br><span class="line">    secondsPassed = <span class="number">0</span></span><br><span class="line">    <span class="title function_">constructor</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="title function_">makeAutoObservable</span>(<span class="variable language_">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">increaseTimer</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">secondsPassed</span> += <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> myTimer = <span class="keyword">new</span> <span class="title class_">Timer</span>()</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">TimerView</span> = <span class="title function_">observer</span>(<span class="function">(<span class="params">&#123; timer &#125;</span>) =&gt;</span> <span class="language-xml"><span class="tag">&lt;<span class="name">span</span>&gt;</span>Seconds passed: &#123;timer.secondsPassed&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span>)</span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">TimerView</span> <span class="attr">timer</span>=<span class="string">&#123;myTimer&#125;</span> /&gt;</span></span>, <span class="variable language_">document</span>.<span class="property">body</span>)</span><br><span class="line"><span class="built_in">setInterval</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    myTimer.<span class="title function_">increaseTimer</span>()</span><br><span class="line">&#125;, <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="jotai"><a href="#jotai" class="headerlink" title="jotai"></a>jotai</h2><p>jotai上手简单，生态较完善，并且DX比较不错，使用不需要层层传递props，而且不像Context会重复渲染，缺点在复杂应用中状态太多不好管理，需要在上层封装Model、Controller层。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Suspense</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; atom, useAtom &#125; <span class="keyword">from</span> <span class="string">&#x27;jotai&#x27;</span></span><br><span class="line"><span class="comment">// 定义原子状态</span></span><br><span class="line"><span class="keyword">const</span> userIdAtom = <span class="title function_">atom</span>(<span class="number">1</span>)</span><br><span class="line"><span class="comment">// 派生状态</span></span><br><span class="line"><span class="keyword">const</span> userAtom = <span class="title function_">atom</span>(<span class="title function_">async</span> (get, &#123; signal &#125;) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> userId = <span class="title function_">get</span>(userIdAtom)</span><br><span class="line">  <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="title function_">fetch</span>(</span><br><span class="line">    <span class="string">`https://jsonplaceholder.typicode.com/users/<span class="subst">$&#123;userId&#125;</span>?_delay=2000`</span>,</span><br><span class="line">    &#123; signal &#125;,</span><br><span class="line">  )</span><br><span class="line">  <span class="keyword">return</span> response.<span class="title function_">json</span>()</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Controls</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="comment">// 使用atom</span></span><br><span class="line">  <span class="keyword">const</span> [userId, setUserId] = <span class="title function_">useAtom</span>(userIdAtom)</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      User Id: &#123;userId&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> setUserId((c) =&gt; c - 1)&#125;&gt;Prev<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> setUserId((c) =&gt; c + 1)&#125;&gt;Next<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">UserName</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> [user] = <span class="title function_">useAtom</span>(userAtom)</span><br><span class="line">  <span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>User name: &#123;user.name&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="valtio"><a href="#valtio" class="headerlink" title="valtio"></a>valtio</h2><p>updating…</p>
+<h2 id="何时使用"><a href="#何时使用" class="headerlink" title="何时使用"></a>何时使用</h2><h3 id="Context-reducer"><a href="#Context-reducer" class="headerlink" title="Context + reducer"></a>Context + reducer</h3><p>不想依赖第三方库，项目比较简单</p>
+<h3 id="MobX-1"><a href="#MobX-1" class="headerlink" title="MobX"></a>MobX</h3><p>快速开发和快速PMF，中大型项目也可以</p>
+<h3 id="zustand-1"><a href="#zustand-1" class="headerlink" title="zustand"></a>zustand</h3><p>快速开发和快速PMF，中大型项目也可以，需要undo&#x2F;redo</p>
+<h3 id="React-Redux"><a href="#React-Redux" class="headerlink" title="React-Redux"></a>React-Redux</h3><p>项目复杂，需要长期维护，undo&#x2F;redo</p>
+<h3 id="jotai-1"><a href="#jotai-1" class="headerlink" title="jotai"></a>jotai</h3><p>中小型项目</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://medium.com/@brechtcorbeel/understanding-the-core-principles-of-react-a-comprehensive-introduction-cb56f0435ea1">https://medium.com/@brechtcorbeel/understanding-the-core-principles-of-react-a-comprehensive-introduction-cb56f0435ea1</a><br><a target="_blank" rel="noopener" href="https://medium.com/@padmagnanapriya/state-management-in-react-comparing-context-api-redux-0403748a241f">https://medium.com/@padmagnanapriya/state-management-in-react-comparing-context-api-redux-0403748a241f</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6973977847547297800?searchId=20250421092546DCBB5357F0DDC339B843#heading-11">https://juejin.cn/post/6973977847547297800?searchId=20250421092546DCBB5357F0DDC339B843#heading-11</a><br><a target="_blank" rel="noopener" href="https://cn.redux.js.org/faq/immutable-data/#what-are-the-benefits-of-immutability">https://cn.redux.js.org/faq/immutable-data/#what-are-the-benefits-of-immutability</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FE/" rel="tag"># FE</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/03/webpack-bundler-execute-order/" rel="prev" title="Webpack如何保证构建产物的加载顺序？">
+                  <i class="fa fa-angle-left"></i> Webpack如何保证构建产物的加载顺序？
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/05/02/astro-architecture-principles/" rel="next" title="Astro Island架构实现原理">
+                  Astro Island架构实现原理 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Jlg1128</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"Jlg1128/Jlg1128.github.io","repo_id":"MDEwOlJlcG9zaXRvcnkzMTcxNTI0NzQ=","category":"Announcements","category_id":"DIC_kwDOEudc2s4CtyRZ","mapping":"pathname","strict":0,"reactions_enabled":1,"emit_metadata":0,"theme":"preferred_color_scheme","lang":"en","crossorigin":"anonymous","input_position":"bottom","loading":"lazy"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-strict'           : CONFIG.giscus.strict,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>

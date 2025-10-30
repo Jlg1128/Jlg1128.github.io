@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon_io/favicon-16x16.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"jlg1128.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":50,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="最近浏览器agent例如Midscene.js、stagehand很火，好奇去体验了下然后了解了下原理。 浏览器agent是什么浏览器agent就是用户用自然语言跟浏览器对话，浏览器会自动执行一些操作、爬虫、断言，类似传动UI自动化、RPA解决重复劳动的问题。 与传统UI自动化、RPA的区别传统的UI自动化都是用硬编码获取元素，假如页面改动频繁，后续的维护成本非常高，但是浏览器agent能够适应经">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Midscene.js原理">
+<meta property="og:url" content="https://jlg1128.github.io/2025/06/23/midscene-principles/index.html">
+<meta property="og:site_name" content="JLG&#39;s Blog">
+<meta property="og:description" content="最近浏览器agent例如Midscene.js、stagehand很火，好奇去体验了下然后了解了下原理。 浏览器agent是什么浏览器agent就是用户用自然语言跟浏览器对话，浏览器会自动执行一些操作、爬虫、断言，类似传动UI自动化、RPA解决重复劳动的问题。 与传统UI自动化、RPA的区别传统的UI自动化都是用硬编码获取元素，假如页面改动频繁，后续的维护成本非常高，但是浏览器agent能够适应经">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-06-23T01:55:22.000Z">
+<meta property="article:modified_time" content="2025-08-19T04:16:08.757Z">
+<meta property="article:author" content="Jlg1128">
+<meta property="article:tag" content="FE">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://jlg1128.github.io/2025/06/23/midscene-principles/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://jlg1128.github.io/2025/06/23/midscene-principles/","path":"2025/06/23/midscene-principles/","title":"Midscene.js原理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Midscene.js原理 | JLG's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="JLG's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JLG's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8agent%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">浏览器agent是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E%E4%BC%A0%E7%BB%9FUI%E8%87%AA%E5%8A%A8%E5%8C%96%E3%80%81RPA%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.</span> <span class="nav-text">与传统UI自动化、RPA的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E6%8D%AE%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%EF%BC%8C%E8%8E%B7%E5%8F%96%E6%90%9C%E7%B4%A2%E6%A1%86DOM%E5%85%83%E7%B4%A0%EF%BC%8C%E5%B9%B6focus"><span class="nav-number">3.1.</span> <span class="nav-text">根据屏幕截图，获取搜索框DOM元素，并focus</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E6%8D%AE%E4%B8%8A%E4%B8%80%E6%AD%A5%E7%9A%84more-actions-needed-by-instruction%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E8%BF%98%E9%9C%80%E8%A6%81%E7%BB%A7%E7%BB%AD%E8%B0%83%E7%94%A8AI"><span class="nav-number">3.2.</span> <span class="nav-text">根据上一步的more_actions_needed_by_instruction判断是否还需要继续调用AI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%9A%84%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-number">3.3.</span> <span class="nav-text">实现的伪代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Midscene-js%E7%9A%84%E7%BC%BA%E7%82%B9%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">4.</span> <span class="nav-text">Midscene.js的缺点是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E4%B8%8Aplan%E7%9A%84prompt"><span class="nav-number">6.</span> <span class="nav-text">附上plan的prompt</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#System-Prompt"><span class="nav-number">6.1.</span> <span class="nav-text">System Prompt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#User-prompt"><span class="nav-number">6.2.</span> <span class="nav-text">User prompt</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jlg1128"
+      src="/images/avator-2.jpeg">
+  <p class="site-author-name" itemprop="name">Jlg1128</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jlg1128" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jlg1128" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/jlg1128@163.com" title="E-Mail → jlg1128@163.com" rel="noopener me"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml" rel="noopener me"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jlg1128.github.io/2025/06/23/midscene-principles/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avator-2.jpeg">
+      <meta itemprop="name" content="Jlg1128">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JLG's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Midscene.js原理 | JLG's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Midscene.js原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-06-23 09:55:22" itemprop="dateCreated datePublished" datetime="2025-06-23T09:55:22+08:00">2025-06-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-08-19 12:16:08" itemprop="dateModified" datetime="2025-08-19T12:16:08+08:00">2025-08-19</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>最近浏览器agent例如Midscene.js、stagehand很火，好奇去体验了下然后了解了下原理。</p>
+<h2 id="浏览器agent是什么"><a href="#浏览器agent是什么" class="headerlink" title="浏览器agent是什么"></a>浏览器agent是什么</h2><p>浏览器agent就是用户用自然语言跟浏览器对话，浏览器会自动执行一些操作、爬虫、断言，类似传动UI自动化、RPA解决重复劳动的问题。</p>
+<h2 id="与传统UI自动化、RPA的区别"><a href="#与传统UI自动化、RPA的区别" class="headerlink" title="与传统UI自动化、RPA的区别"></a>与传统UI自动化、RPA的区别</h2><p>传统的UI自动化都是用硬编码获取元素，假如页面改动频繁，后续的维护成本非常高，但是浏览器agent能够适应经常变动的内容。</p>
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>假如我想要的人工地操作”在搜索框输入 “耳机” ，敲回车”，主要有以下几个步骤：</p>
+<ol>
+<li>定位搜索框</li>
+<li>输入”耳机”</li>
+<li>敲回车</li>
+</ol>
+<p>那么浏览器agent也一样需要执行这三个步骤</p>
+<ol>
+<li>根据网页显示，获取搜索框dom元素，并focus</li>
+<li>执行输入”耳机”操作</li>
+<li>按下 回车键</li>
+</ol>
+<p>Midscene.js是如何执行这三个操作的</p>
+<h3 id="根据屏幕截图，获取搜索框DOM元素，并focus"><a href="#根据屏幕截图，获取搜索框DOM元素，并focus" class="headerlink" title="根据屏幕截图，获取搜索框DOM元素，并focus"></a>根据屏幕截图，获取搜索框DOM元素，并focus</h3><p>将screenshotBase64和prompt发送给视觉语言大模型，要求返回如下结构</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;what_the_user_wants_to_do_next_by_instruction&quot;</span><span class="punctuation">:</span> <span class="string">&quot;在搜索框输入 &#x27;耳机&#x27; ，敲回车&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;log&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Now I want to use action &#x27;Input&#x27; to enter &#x27;耳机&#x27; in the search bar first.&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;more_actions_needed_by_instruction&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span> <span class="comment">// 是否还需要进行操作</span></span><br><span class="line">  <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Input&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;locate&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;bbox&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="number">269</span><span class="punctuation">,</span> <span class="number">57</span><span class="punctuation">,</span> <span class="number">824</span><span class="punctuation">,</span> <span class="number">87</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;prompt&quot;</span><span class="punctuation">:</span> <span class="string">&quot;The search input field&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;param&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span> <span class="string">&quot;耳机&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>根据bbox和DOM tree进行深度遍历 DOM节点范围匹配，得到范围最相近的DOM元素，当前是input元素，清空input中的内容。</p>
+<h3 id="根据上一步的more-actions-needed-by-instruction判断是否还需要继续调用AI"><a href="#根据上一步的more-actions-needed-by-instruction判断是否还需要继续调用AI" class="headerlink" title="根据上一步的more_actions_needed_by_instruction判断是否还需要继续调用AI"></a>根据上一步的more_actions_needed_by_instruction判断是否还需要继续调用AI</h3><p>执行将上一步后将上一步的log和prompt发送给大模型，返回如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;what_the_user_wants_to_do_next_by_instruction&quot;</span><span class="punctuation">:</span> <span class="string">&quot;在搜索框输入 \\&quot;</span>耳机\\<span class="string">&quot; 后，需要敲回车来执行搜索。&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;log&quot;</span><span class="punctuation">:</span> <span class="string">&quot;现在我将使用 &#x27;KeyboardPress&#x27; 动作来模拟敲击回车键以执行搜索。&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;more_actions_needed_by_instruction&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;KeyboardPress&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;param&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Enter&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>执行KeyboardPress操作</p>
+<h3 id="实现的伪代码"><a href="#实现的伪代码" class="headerlink" title="实现的伪代码"></a>实现的伪代码</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> logList = [];</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">generateTaskByUserPromptWithPageScreen</span>(<span class="params">prompt, &#123; logList &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="attr">type</span>: <span class="string">&#x27;Planning&#x27;</span>,</span><br><span class="line">    <span class="attr">subType</span>: <span class="string">&#x27;Plan&#x27;</span>,</span><br><span class="line">    <span class="attr">locate</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">param</span>: &#123;</span><br><span class="line">      prompt,</span><br><span class="line">      <span class="attr">log</span>: logList,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">execute</span>: <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> screenShot = <span class="title function_">screenShot</span>();</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">await</span> <span class="title function_">callAiGetPlan</span>(prompt, &#123; <span class="attr">log</span>: logList.<span class="title function_">join</span>(<span class="string">&#x27;-&#x27;</span>), screenShot &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> planningTask = <span class="title function_">generateTaskByUserPromptWithPageScreen</span>(prompt);</span><br><span class="line"><span class="keyword">while</span> (planningTask) &#123;</span><br><span class="line">  <span class="keyword">const</span> planResult = planningTask.<span class="title function_">execute</span>();</span><br><span class="line">  <span class="keyword">const</span> &#123; log, more_actions_needed_by_instruction, actions &#125; = planResult;</span><br><span class="line">  <span class="keyword">const</span> newTasks = <span class="title function_">convertPlanToExecutable</span>(actions); <span class="comment">// &#x27;Tap&#x27; | &#x27;Hover&#x27; 等等</span></span><br><span class="line">  newTasks.<span class="title function_">execute</span>();</span><br><span class="line">  logList.<span class="title function_">push</span>(log);</span><br><span class="line">  <span class="keyword">if</span> (more_actions_needed_by_instruction) &#123;</span><br><span class="line">    planningTask = <span class="title function_">generateTaskByUserPromptWithPageScreen</span>(prompt, &#123;<span class="attr">log</span>: logList.<span class="title function_">join</span>(<span class="string">&#x27;-&#x27;</span>)&#125;);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Midscene-js的缺点是什么"><a href="#Midscene-js的缺点是什么" class="headerlink" title="Midscene.js的缺点是什么"></a>Midscene.js的缺点是什么</h2><ol>
+<li>成本<br>豆包和千问VL的计费都是输入：3元&#x2F;百万token，输出：9元&#x2F;百万token，像我们上述的调用输入是2400token，输出是100token，<br>上述的一个问题调用了两次AI，大概3元可以问150个问题，我觉得还能接受。</li>
+<li>准确程度<br>Midscene.js是视觉分析得到元素的bounding box来获取元素的，可能会不准</li>
+<li>运行速度<br>上述问题在本地调用两次”qwen-vl-max-latest”模型AI花用了15-20秒，时间稍长，但是一般都是异步任务也能接受。</li>
+<li>一些操作没法实现<br>目前还不支持拖拽、双击、文件上传等等。</li>
+<li>假如目标元素不在首屏，就无法定位元素。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>后续将会对比下和Playwright MCP的区别。</p>
+<h2 id="附上plan的prompt"><a href="#附上plan的prompt" class="headerlink" title="附上plan的prompt"></a>附上plan的prompt</h2><h3 id="System-Prompt"><a href="#System-Prompt" class="headerlink" title="System Prompt"></a>System Prompt</h3><figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">&#x27;Target: User will give you a screenshot, an instruction and some previous logs indicating what have been done. Please tell what the next one action is (or null if no action should be done) to do the tasks the instruction requires. </span><br><span class="line"></span><br><span class="line">Restriction:</span><br><span class="line">- Don\&#x27;t give extra actions or plans beyond the instruction. ONLY plan for what the instruction requires. For example, don\&#x27;t try to submit the form if the instruction is only to fill something.</span><br><span class="line">- Always give ONLY ONE action in `log` field (or null if no action should be done), instead of multiple actions. Supported actions are Tap, Hover, Input, KeyboardPress, Scroll.</span><br><span class="line">- Don\&#x27;t repeat actions in the previous logs.</span><br><span class="line">- Bbox is the bounding box of the element to be located. It\&#x27;s an array of 4 numbers, representing 2d bounding box as [xmin, ymin, xmax, ymax].</span><br><span class="line"></span><br><span class="line">Supporting actions:</span><br><span class="line">- Tap: &#123; type: &quot;Tap&quot;, locate: &#123;bbox: [number, number, number, number], prompt: string &#125; &#125;</span><br><span class="line">- RightClick: &#123; type: &quot;RightClick&quot;, locate: &#123;bbox: [number, number, number, number], prompt: string &#125; &#125;</span><br><span class="line">- Hover: &#123; type: &quot;Hover&quot;, locate: &#123;bbox: [number, number, number, number], prompt: string &#125; &#125;</span><br><span class="line">- Input: &#123; type: &quot;Input&quot;, locate: &#123;bbox: [number, number, number, number], prompt: string &#125;, param: &#123; value: string &#125; &#125; // Replace the input field with a new value. `value` is the final that should be filled in the input box. No matter what modifications are required, just provide the final value to replace the existing input value. Giving a blank string means clear the input field.</span><br><span class="line">- KeyboardPress: &#123; type: &quot;KeyboardPress&quot;, param: &#123; value: string &#125; &#125;</span><br><span class="line">- Scroll: &#123; type: &quot;Scroll&quot;, locate: &#123;bbox: [number, number, number, number], prompt: string &#125; | null, param: &#123; direction: \&#x27;down\&#x27;(default) | \&#x27;up\&#x27; | \&#x27;right\&#x27; | \&#x27;left\&#x27;, scrollType: \&#x27;once\&#x27; (default) | \&#x27;untilBottom\&#x27; | \&#x27;untilTop\&#x27; | \&#x27;untilRight\&#x27; | \&#x27;untilLeft\&#x27;, distance: null | number &#125;&#125; // locate is the element to scroll. If it\&#x27;s a page scroll, put `null` in the `locate` field.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Field description:</span><br><span class="line">* The `prompt` field inside the `locate` field is a short description that could be used to locate the element.</span><br><span class="line"></span><br><span class="line">Return in JSON format:</span><br><span class="line">&#123;</span><br><span class="line">  &quot;what_the_user_wants_to_do_next_by_instruction&quot;: string, // What the user wants to do according to the instruction and previous logs. </span><br><span class="line">  &quot;log&quot;: string, // Log what the next one action (ONLY ONE!) you can do according to the screenshot and the instruction. The typical log looks like &quot;Now i want to use action \&#x27;&#123;&#123; action-type &#125;&#125;\&#x27; to do .. first&quot;. If no action should be done, log the reason. &quot;. Use the same language as the user\&#x27;s instruction.</span><br><span class="line">  &quot;error&quot;?: string, // Error messages about unexpected situations, if any. Only think it is an error when the situation is not expected according to the instruction. Use the same language as the user\&#x27;s instruction.</span><br><span class="line">  &quot;more_actions_needed_by_instruction&quot;: boolean, // Consider if there is still more action(s) to do after the action in &quot;Log&quot; is done, according to the instruction. If so, set this field to true. Otherwise, set it to false.</span><br><span class="line">  &quot;action&quot;: </span><br><span class="line">    &#123;</span><br><span class="line">      // one of the supporting actions</span><br><span class="line">    &#125; | null,</span><br><span class="line">  ,</span><br><span class="line">  &quot;sleep&quot;?: number, // The sleep time after the action, in milliseconds.</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">For example, when the instruction is &quot;click \&#x27;Confirm\&#x27; button, and click \&#x27;Yes\&#x27; in popup&quot; and the log is &quot;I will use action Tap to click \&#x27;Confirm\&#x27; button&quot;, by viewing the screenshot and previous logs, you should consider: We have already clicked the \&#x27;Confirm\&#x27; button, so next we should find and click \&#x27;Yes\&#x27; in popup.</span><br><span class="line"></span><br><span class="line">this and output the JSON:</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;what_the_user_wants_to_do_next_by_instruction&quot;: &quot;We have already clicked the \&#x27;Confirm\&#x27; button, so next we should find and click \&#x27;Yes\&#x27; in popup&quot;,</span><br><span class="line">  &quot;log&quot;: &quot;I will use action Tap to click \&#x27;Yes\&#x27; in popup&quot;,</span><br><span class="line">  &quot;more_actions_needed_by_instruction&quot;: false,</span><br><span class="line">  &quot;action&quot;: &#123;</span><br><span class="line">    &quot;type&quot;: &quot;Tap&quot;,</span><br><span class="line">    &quot;locate&quot;: &#123;</span><br><span class="line">      &quot;bbox&quot;: [100, 100, 200, 200],</span><br><span class="line">      &quot;prompt&quot;: &quot;The \&#x27;Yes\&#x27; button in popup&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="User-prompt"><a href="#User-prompt" class="headerlink" title="User prompt"></a>User prompt</h3><figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`Here is the user&#x27;s instruction:&lt;instruction&gt;  &lt;high_priority_knowledge&gt;    undefined  &lt;/high_priority_knowledge&gt;  在搜索框输入 &quot;耳机&quot; ，敲回车&lt;/instruction&gt;`</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FE/" rel="tag"># FE</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/05/02/astro-architecture-principles/" rel="prev" title="Astro Island架构实现原理">
+                  <i class="fa fa-angle-left"></i> Astro Island架构实现原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/26/playwright-mcp-compare-with-midcene/" rel="next" title="Playwright MCP原理以及与Midscene.js的区别">
+                  Playwright MCP原理以及与Midscene.js的区别 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments giscus-container">
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Jlg1128</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="giscus" type="application/json">{"enable":true,"repo":"Jlg1128/Jlg1128.github.io","repo_id":"MDEwOlJlcG9zaXRvcnkzMTcxNTI0NzQ=","category":"Announcements","category_id":"DIC_kwDOEudc2s4CtyRZ","mapping":"pathname","strict":0,"reactions_enabled":1,"emit_metadata":0,"theme":"preferred_color_scheme","lang":"en","crossorigin":"anonymous","input_position":"bottom","loading":"lazy"}</script>
+
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.page.comments) return;
+
+  NexT.utils.loadComments('.giscus-container')
+    .then(() => NexT.utils.getScript('https://giscus.app/client.js', {
+      attributes: {
+        async                   : true,
+        crossOrigin             : 'anonymous',
+        'data-repo'             : CONFIG.giscus.repo,
+        'data-repo-id'          : CONFIG.giscus.repo_id,
+        'data-category'         : CONFIG.giscus.category,
+        'data-category-id'      : CONFIG.giscus.category_id,
+        'data-mapping'          : CONFIG.giscus.mapping,
+        'data-strict'           : CONFIG.giscus.strict,
+        'data-reactions-enabled': CONFIG.giscus.reactions_enabled,
+        'data-emit-metadata'    : CONFIG.giscus.emit_metadata,
+        'data-theme'            : CONFIG.giscus.theme,
+        'data-lang'             : CONFIG.giscus.lang,
+        'data-input-position'   : CONFIG.giscus.input_position,
+        'data-loading'          : CONFIG.giscus.loading
+      },
+      parentNode: document.querySelector('.giscus-container')
+    }));
+});
+</script>
+
+</body>
+</html>
